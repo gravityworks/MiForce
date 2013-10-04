@@ -3,37 +3,30 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 	<meta name ="apple-mobile-web-app-capable" content="yes">
-    <style>
-      	html, body, #map-canvas {
-        	margin: 0;
-        	padding: 0;
-			width: 788px;
-        	height: 976px;
-      		}
-    </style>
+    
+      
+    <link href="style.css" rel="stylesheet" />
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 	<script type="text/javascript" src="http://www.datejs.com/build/date.js"></script>
 
 	</head>
 	
-	<body bgcolor="#000">>
-		<div>
-			<img src="images/title.png" />
-			Score <span id="spnScore">0</span>
-			
+	<body>
+		<header class="align-center">
+			Score <span id="spnScore">0</span>			
 			High Score <span id="spnHighScore">0</span>
-			<span id="btnStart" style="color:#fff;">Start</span>
-			<a href="help.html">Help?</a>
-		</div>
-		<div id="status"></div>
+			<span id="btnStart" class="start">Start</span>			
+		</header>
+		<div id="status" style="display: none"></div>
 		<div id="end" style="display:none;">Thanks for playing your score is <span id='finalScore'></span></div>
-    	<div id="map-canvas"></div>
+		<div class="map-container">
+    		<div id="map-canvas"></div>
+    	</div>
 		<div id="info" style="display:none;"></div>
-		<div id="footer">
-			Developed by Gravity Works
-			<img src="images/smallgear.png">
-		</div>
+		<footer>
+			Developed by Gravity Works <img src="images/smallgear.png" style="width: 20px; height: auto; vertical-align: middle" />
+		</footer>
   	</body>
 	<script>
 		var contaminantImage = 'images/toxic.png';
@@ -74,8 +67,10 @@
 	 
 	    function initialize() {
 	        var mapOptions = { 
-	            zoom: 7,
+	            zoom: 6,
 				scrollwheel: false,
+				panControl: false,
+				draggable: false,
 	            disableDefaultUI: true,
 				disableDoubleClickZoom: true,
 	            center: new google.maps.LatLng(44.130821, -85.749512),
@@ -84,7 +79,7 @@
 	        map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
 	
 			var imageBounds = new google.maps.LatLngBounds(
-			      new google.maps.LatLng(42.31082388091818, -89.87939453125),
+			      new google.maps.LatLng(41.31082388091818, -89.87939453125),
 			      new google.maps.LatLng(48.08508535995383, -82.001953125));
 			
 		
