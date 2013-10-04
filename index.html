@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+	<meta name ="apple-mobile-web-app-capable" content="yes">
+    <style>
+      	html, body, #map-canvas {
+        	margin: 0;
+        	padding: 0;
+			width: 788px;
+        	height: 976px;
+      		}
+    </style>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+	<script type="text/javascript" src="http://www.datejs.com/build/date.js"></script>
+
+	</head>
+	
+	<body bgcolor="#000">>
+		<div>
+			<img src="images/title.png" />
+			Score <span id="spnScore">0</span>
+			
+			High Score <span id="spnHighScore">0</span>
+			<span id="btnStart" style="color:#fff;">Start</span>
+			<a href="help.html">Help?</a>
+		</div>
+		<div id="status"></div>
+		<div id="end" style="display:none;">Thanks for playing your score is <span id='finalScore'></span></div>
+    	<div id="map-canvas"></div>
+		<div id="info" style="display:none;"></div>
+		<div id="footer">
+			Developed by Gravity Works
+			<img src="images/smallgear.png">
+		</div>
+  	</body>
+	<script>
+		var contaminantImage = 'images/toxic.png';
+		var oilImage = 'images/oil.png';
+		var vetImage = 'images/vet.png';
+		var policeImage = 'images/police.png';
+		
+		$('#comtaminated').attr("src",contaminantImage);
+		$('#oil').attr("src",oilImage);
+		$('#veteran').attr("src",vetImage);
+		$('#police').attr("src",policeImage);
+		
+		var markers = [];
+		var map;
+		var m_vetInterval = 0;
+		
+		var m_contaminantInterval = 0;
+		var m_oilInterval = 0;
+		var m_policeInterval = 0;
+		var m_vetStartInterval = 0;
+		var m_gameLoopInterval = 0;
+		
+		var m_coin = document.createElement('audio');
+		var m_fireSound = document.createElement('audio');
+		var m_policeSound = document.createElement('audio');
+		var m_vetSound = document.createElement('audio');
+		var m_background = document.createElement('audio');
+
+		var m_endTime = new Date();
+		
+		$(document).ready(function(){
+			$("#btnStart").click(function(){
+				startGame();
+			});
+			
+			loadSounds();
+		});
+	 
+	    function initialize() {
+	        var mapOptions = { 
+	            zoom: 7,
+				scrollwheel: false,
+	            disableDefaultUI: true,
+				disableDoubleClickZoom: true,
+	            center: new google.maps.LatLng(44.130821, -85.749512),
+	            mapTypeId: google.maps.MapTypeId.ROADMAP
+	        };
+	        map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+	
+			var imageBounds = new google.maps.LatLngBounds(
+			      new google.maps.LatLng(42.31082388091818, -89.87939453125),
+			      new google.maps.LatLng(48.08508535995383, -82.001953125));
+			
+		
+		 styleOverlay = new google.maps.GroundOverlay('images/back.png',imageBounds);
+		  styleOverlay.setMap(map);
+		
+	    }
+
+		function deleteMarker(){
+		  markers[0].setMap(null);
+		}
+		
+		function buildMapPoint(latitude, longitude, title, scoreValue, imagePath,timeToKeepOnScreen, sound){
+				latLng = new google.maps.LatLng(latitude, longitude);
+
+                var image = new google.maps.MarkerImage(imagePath,
+                    new google.maps.Size(43.0, 48.0),
+                    new google.maps.Point(0, 0),
+                    new google.maps.Point(21.0, 24.0)
+                );
+
+                // Creating a marker and putting it on the map
+                var marker = new google.maps.Marker({
+                    position: latLng,
+                    map: map,
+                    icon: image,
+                    title: title
+                });
+
+                markers.push(marker);
+
+                (function (marker, location) {
+						setInterval(function(){marker.setMap(null);},timeToKeepOnScreen);
+
+                    // Attaching a click event to the current marker
+                    google.maps.event.addListener(marker, "click", function (e) {
+						var score = parseInt(jQuery("#spnScore").text());
+						sound.play();
+						score = score + scoreValue;
+						jQuery("#spnScore").text(score);
+						jQuery("#status").text(marker.title);
+					 
+					
+						var highScore = jQuery("#spnHighScore").text(score);
+						
+						if (highScore < score){
+							jQuery("#spnHighScore").text(highScore);
+							
+						}
+						
+						marker.setMap(null);    
+						   
+                    });
+
+                })(marker, location);
+		}
+		
+		function endGame() {
+			clearInterval(m_vetInterval);
+			clearInterval(m_contaminantInterval);
+			clearInterval(m_oilInterval);
+			clearInterval(m_policeInterval);
+			clearInterval(m_vetStartInterval);
+			clearInterval(m_gameLoopInterval);
+			
+			$("#finalScore").text(jQuery("#spnScore").text());
+			$("#end").show();
+			m_background.stop();
+		}
+		
+		function gameLoop() {
+			var currentTime = new Date().getTime();
+			
+			if (m_endTime <= currentTime){
+				endGame();
+			}
+		}
+		
+        function loadContaminant() {
+            jQuery.ajax({
+                type: "Get",
+                url: "http://opendata.socrata.com/resource/2brv-dhpz.json?",
+                dataType: "json",
+                success: function (json) {
+					var random = Math.floor(Math.random() * ((json.length -1) - 0 + 1)) + 0;
+					var rootItem = json[random];
+					var location = rootItem.location_1;
+					var titleString = "Great Job! You helped eliminate " + rootItem.pollutants + " at " + rootItem.name;
+					$("#info").append("<span>" + rootItem.county + " - Michigan is containmented at " + rootItem.name + " " + rootItem.score + "</span>");
+					// build the generic map point
+					buildMapPoint(location.latitude, location.longitude, titleString, 5, contaminantImage,700,m_fireSound);
+                }
+            });
+        }
+
+		function loadOil() {
+            jQuery.ajax({
+                type: "Get",
+                url: "http://opendata.socrata.com/resource/ixt6-qcyf.json",
+                dataType: "json",
+                success: function (json) {
+					var random = Math.floor(Math.random() * ((json.length -1) - 0 + 1)) + 0;
+					var rootItem = json[random];
+					var location = rootItem.wellhole_top;
+					var titleString = "Great Job! You put out an oil fire at " + rootItem.coname; 
+					
+					// build the generic map point
+					buildMapPoint(location.latitude, location.longitude, titleString, 1, oilImage,2000,m_coin);
+                }
+            });
+        }
+
+		function loadVets() {
+			var music = document.createElement('audio');
+			music.setAttribute('src', 'http://www.navy.mil/navydata/media/anchors.mp3');
+			music.setAttribute('autoplay', 'false');
+			music.volume = .2;
+			music.play();
+			m_loadVets = true;
+			
+			m_vetInterval = setInterval(function(){
+				jQuery.ajax({
+	                type: "Get",
+	                url: "http://opendata.socrata.com/resource/sh9h-hasz.json",
+	                dataType: "json",
+	                success: function (json) {
+						var random = Math.floor(Math.random() * ((json.length -1) - 0 + 1)) + 0;
+						var rootItem = json[random];
+						var location = rootItem.location_1;
+						var titleString = "Oh no, you got in the way of a vet trying to put out a fire. In " + rootItem.year + 
+							" there was a populate of " + rootItem.population + " in " + rootItem.county + " county"; 
+					
+						// build the generic map point
+						buildMapPoint(location.latitude, location.longitude, titleString, -1, vetImage, 900, m_vetSound);
+	                }
+	            });
+			},2000);
+			
+			setInterval(function(){clearInterval(m_vetInterval);}, 37000);
+        }
+		
+		function loadPolice() {
+            jQuery.ajax({
+                type: "Get",
+                url: "http://opendata.socrata.com/resource/b877-bq25.json",
+                dataType: "json",
+                success: function (json) {
+					var random = Math.floor(Math.random() * ((json.length -1) - 0 + 1)) + 0;
+					var rootItem = json[random];
+					var location = rootItem.location_1;
+					var titleString = "Oh no you distracted a police offer on route from " + rootItem.id; 
+					
+					// build the generic map point
+					var totalPoints = parseInt(jQuery("#spnScore").text()) * -1;
+					buildMapPoint(location.latitude, location.longitude, titleString, totalPoints, policeImage,2000, m_policeSound);
+                }
+            });
+        }
+		
+		function loadSounds(){
+			m_policeSound.setAttribute('src', 'http://www.mediacollege.com/downloads/sound-effects/vehicle/siren/firetruck-01.wav');
+			m_fireSound.setAttribute('src', 'http://www.mediacollege.com/downloads/sound-effects/household/fire-extinguisher-01.wav');
+			m_coin.setAttribute('src', 'http://www.mediacollege.com/downloads/sound-effects/money/coin-03.wav');
+			m_vetSound.setAttribute('src', 'http://www.gravityworksdesign.com/downloads/1.mp3');
+			m_background.setAttribute('src', 'sounds/back.wav');
+			m_background.setAttribute('loop', 'loop');
+		}
+		
+		function startGame() {
+			m_endTime = new Date(new Date().getTime() + (2 * 60000));
+			
+			m_contaminantInterval = setInterval(loadContaminant,800);
+			m_oilInterval = setInterval(loadOil,800);
+			m_vetStartInterval = setInterval(loadVets,50000);
+			m_policeInterval = setInterval(loadPolice,4000);	
+			m_gameLoopInterval = setInterval(gameLoop,1000);
+			m_background.play();
+			
+			jQuery("#spnScore").text("");
+			jQuery("#status").text("");
+		}
+		
+		google.maps.event.addDomListener(window, 'load', initialize);
+  </script>
+</html>
