@@ -220,8 +220,8 @@
 			currLevel = 1;
 			
 			$(".finalScore").text(jQuery("#spnScore").text());
-			//m_background.pause();
-			//m_background.currentTime = 0;
+			m_background.pause();
+			m_background.currentTime = 0;
 			m_gameOverSound.play();
 		}
 		
@@ -351,8 +351,8 @@
 			m_policeSound.setAttribute('src', 'sounds/police.wav');
 			m_fireSound.setAttribute('src', 'sounds/toxic.wav');
 			m_coin.setAttribute('src', 'sounds/coin.wav');
-			//m_background.setAttribute('src', 'sounds/back.wav');
-			//m_background.setAttribute('loop', 'loop');	
+			m_background.setAttribute('src', 'sounds/back.wav');
+			m_background.setAttribute('loop', 'loop');	
 		}
 		
 		function startGame() {
