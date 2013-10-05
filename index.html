@@ -17,7 +17,7 @@
 	
 	<body>
 		<div style="display:none;">
-			<div id="inline">
+			<div id="inline" class="popupBox">
 				<div>
 					<p>Michigan is in trouble!</p>
 					<p>
@@ -50,11 +50,11 @@
 					</div>
 				</div>
 			</div>
-			<div id="endGameLose">
+			<div id="endGameLose"  class="popupBox">
 				Game over!! You Lose. Final Score <span class='finalScore'></span>
 				<span class="start">Play again?</span>	
 			</div>
-			<div id="endGameWin">
+			<div id="endGameWin" class="popupBox">
 				Congratulations you beat the game!
 				Final Score <span class='finalScore'></span>
 				<div>
@@ -117,10 +117,10 @@
 		var m_policeDuration = 2000;
 		var m_vetDuration = 1000;
 		var m_vetSoundDuration = 30000;
-
+  		var speedIncriment = .09;
 		var levelDuration = 15000; // level duration
 		var levelScore = 10;
-		var levelIncrease = 10;
+		var levelIncrease = 13;
 		var currLevel = 1;
 		
 		var m_coin = document.createElement('audio');
@@ -137,7 +137,8 @@
 			$(".endGameLose").colorbox({inline:true, width:"95%"});
 			$(".endGameWin").colorbox({inline:true, width:"95%"});
 			$(".inline").click();	// initial lightbox
-				
+			$('#cboxClose').remove();
+		
 			$(".start").click(function(){
 				startGame();
 			});
@@ -216,10 +217,11 @@
 		function endGame() {
 			clearIntervals();
 			clearInterval(m_gameLoopInterval);
-
+			currLevel = 1;
+			
 			$(".finalScore").text(jQuery("#spnScore").text());
-			m_background.pause();
-			m_background.currentTime = 0;
+			//m_background.pause();
+			//m_background.currentTime = 0;
 			m_gameOverSound.play();
 		}
 		
@@ -227,29 +229,31 @@
 			if (currLevel >= 10){
 				endGame();
 				$(".endGameWin").click();
+				$('#cboxClose').remove();
 			}
 			
 			var currScore = parseInt(jQuery("#spnScore").text());
+			
 			if (currScore > levelScore) {
-				m_contaminantSpeed = m_contaminantSpeed - (m_contaminantSpeed * .05);
-				m_oilSpeed = m_oilSpeed - (m_oilSpeed * .05);
-				m_policeSpeed = m_policeSpeed - (m_policeSpeed * .05);
-				m_vetSpeed = m_vetSpeed - (m_vetSpeed * .05);
+				m_contaminantSpeed = m_contaminantSpeed - (m_contaminantSpeed * speedIncriment);
+				m_oilSpeed = m_oilSpeed - (m_oilSpeed * speedIncriment);
+				m_policeSpeed = m_policeSpeed - (m_policeSpeed * speedIncriment);
+				m_vetSpeed = m_vetSpeed - (m_vetSpeed * speedIncriment);
 
-				m_contaminantDuration = m_contaminantDuration - (m_contaminantDuration * .05);
-				m_oilDuration = m_oilDuration - (m_oilDuration * .05);
-				m_policeDuration = m_policeDuration - (m_policeDuration * .05);
-				m_vetDuration = m_vetDuration - (m_vetDuration * .05);
+				m_contaminantDuration = m_contaminantDuration - (m_contaminantDuration * speedIncriment);
+				m_oilDuration = m_oilDuration - (m_oilDuration * speedIncriment);
+				m_policeDuration = m_policeDuration - (m_policeDuration * speedIncriment);
+				m_vetDuration = m_vetDuration - (m_vetDuration * speedIncriment);
 
 				updateLevelSpeed();
 
 				jQuery("#spnLvl").text(currLevel++);
 				levelScore = levelScore + levelIncrease;
-				console.log(levelScore);
 			} else {
 				// end game
 				endGame();
 				$(".endGameLose").click();
+				$('#cboxClose').remove();
 			}
 		}
 		
@@ -347,8 +351,8 @@
 			m_policeSound.setAttribute('src', 'sounds/police.wav');
 			m_fireSound.setAttribute('src', 'sounds/toxic.wav');
 			m_coin.setAttribute('src', 'sounds/coin.wav');
-			m_background.setAttribute('src', 'sounds/back.wav');
-			m_background.setAttribute('loop', 'loop');	
+			//m_background.setAttribute('src', 'sounds/back.wav');
+			//m_background.setAttribute('loop', 'loop');	
 		}
 		
 		function startGame() {
