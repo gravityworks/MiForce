@@ -439,16 +439,23 @@ header {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-
 }
 
+.popupImage{
+		vertical-align:middle;
+}
+
+.popupText{
+	padding-left: 10px;
+	vertical-align: middle;
+}
 #images{
 	margin-top: 30px;
 }
 
 .start-container{
 	margin-left:40px;
-	margin-top: 70px;
+	margin-top: 50px;
 	padding-top: 15px;
 	background: #333;
 	width: 120px;
