@@ -39,7 +39,11 @@
 					<span id="btnStart" class="start">Start</span>	
 				</div>
 			</div>
-			<div id="endGame">
+			<div id="endGameLose">
+				Game over!! You Lose. Not enough levels meet. 
+			</div>
+			<div id="endGameWin">
+				Congratulations you beat the game!
 			</div>
 		</div>
 			
@@ -49,6 +53,8 @@
 			High Score <span id="spnHighScore">0</span>
 		
 			<a class='inline' href="#inline" style="display:none;">Help</a>		
+			<a class='endGameWin' href="#endGameWin" style="display:none;">Help</a>		
+			<a class='endGameLose' href="#endGameLose" style="display:none;">Help</a>		
 		</header>
 		<div id="status" style="display: none"></div>
 		<div id="end" style="display:none;">Thanks for playing your score is <span id='finalScore'></span></div>
@@ -89,32 +95,31 @@
 
 		var m_contaminantSpeed = 800;
 		var m_oilSpeed = 800;
-		var m_policeSpeed = 50000;
+		var m_policeSpeed = 3000;
 		var m_vetSpeed = 4000;
 
 		var m_contaminantDuration = 700;
 		var m_oilDuration = 1000;
-		var m_policeDuration = 1000;
+		var m_policeDuration = 2000;
 		var m_vetDuration = 900;
 		var m_vetSoundDuration = 30000;
 
-		var levelDuration = 20000; // level duration
+		var levelDuration = 15000; // level duration
 		var levelScore = 10;
 		var currLevel = 1;
 		
 		var m_coin = document.createElement('audio');
 		var m_fireSound = document.createElement('audio');
 		var m_policeSound = document.createElement('audio');
-		var m_vetSound = document.createElement('audio');
 		var m_background = document.createElement('audio');
 
 		var m_endTime = new Date();
 		
 		$(document).ready(function(){
-		//	$(".ajax").colorbox();
-		
-			$(".inline").colorbox({inline:true, width:"50%"});
-				$(".inline").click();
+			$(".inline").colorbox({inline:true, width:"95%"});
+			$(".endGameLose").colorbox({inline:true, width:"95%"});
+			$(".endGameWin").colorbox({inline:true, width:"95%"});
+			$(".inline").click();	// initial lightbox
 				
 			$("#btnStart").click(function(){
 				startGame();
@@ -141,9 +146,8 @@
 			      new google.maps.LatLng(48.08508535995383, -82.001953125));
 			
 		
-		 styleOverlay = new google.maps.GroundOverlay('images/back.png',imageBounds);
-		  styleOverlay.setMap(map);
-		
+		 	styleOverlay = new google.maps.GroundOverlay('images/back.png',imageBounds);
+		  	styleOverlay.setMap(map);
 	    }
 
 		function deleteMarker(){
@@ -180,7 +184,6 @@
 						score = score + scoreValue;
 						jQuery("#spnScore").text(score);
 						jQuery("#status").text(marker.title);
-					 
 					
 						var highScore = jQuery("#spnHighScore").text(score);
 						
@@ -205,15 +208,16 @@
 			
 			$("#finalScore").text(jQuery("#spnScore").text());
 			$("#end").show();
-			m_background.stop();
+			m_background.pause();
+			m_background.currentTime = 0;
 		}
 		
 		function gameLoop() {
-			// var currentTime = new Date().getTime();
+			if (currLevel >= 10){
+				$(".endGameWin").click();
+				endGame();
+			}
 			
-			// if (m_endTime <= currentTime){
-			// 	endGame();
-			// }
 			var currScore = parseInt(jQuery("#spnScore").text());
 			if (currScore > levelScore) {
 				m_contaminantSpeed = m_contaminantSpeed - (m_contaminantSpeed * .1);
@@ -232,6 +236,7 @@
 				levelScore = levelScore + levelScore;
 			} else {
 				// end game
+				$(".endGameLose").click();
 				endGame();
 			}
 		}
@@ -279,11 +284,6 @@
         }
 
 		function loadVets() {
-			var music = document.createElement('audio');
-			music.setAttribute('src', 'http://www.navy.mil/navydata/media/anchors.mp3');
-			music.setAttribute('autoplay', 'false');
-			music.volume = .2;
-			music.play();
 			m_loadVets = true;
 			jQuery.ajax({
                 type: "Get",
@@ -296,17 +296,14 @@
         }
 
         function randomVet() {
-        	//m_vetInterval = setInterval(function(){
-				var random = Math.floor(Math.random() * ((vet.length -1) - 0 + 1)) + 0;
-				var rootItem = vet[random];
-				var location = rootItem.location_1;
-				var titleString = "Oh no, you got in the way of a vet trying to put out a fire. In " + rootItem.year + 
+			var random = Math.floor(Math.random() * ((vet.length -1) - 0 + 1)) + 0;
+			var rootItem = vet[random];
+			var location = rootItem.location_1;
+			var titleString = "Oh no, you got in the way of a vet trying to put out a fire. In " + rootItem.year + 
 					" there was a populate of " + rootItem.population + " in " + rootItem.county + " county"; 
 			
-				// build the generic map point
-				buildMapPoint(location.latitude, location.longitude, titleString, -1, vetImage, m_vetDuration, m_coin);
-			//}, 2000);
-			//setInterval(function(){clearInterval(m_vetInterval);}, m_vetSoundDuration);
+			// build the generic map point
+			buildMapPoint(location.latitude, location.longitude, titleString, -1, vetImage, m_vetDuration, m_coin);
         }
 		
 		function loadPolice() {
@@ -335,7 +332,6 @@
 			m_policeSound.setAttribute('src', 'http://www.mediacollege.com/downloads/sound-effects/vehicle/siren/firetruck-01.wav');
 			m_fireSound.setAttribute('src', 'http://www.mediacollege.com/downloads/sound-effects/household/fire-extinguisher-01.wav');
 			m_coin.setAttribute('src', 'http://www.mediacollege.com/downloads/sound-effects/money/coin-03.wav');
-			m_vetSound.setAttribute('src', 'http://www.gravityworksdesign.com/downloads/1.mp3');
 			m_background.setAttribute('src', 'sounds/back.wav');
 			m_background.setAttribute('loop', 'loop');
 		}

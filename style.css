@@ -465,6 +465,16 @@ header {
 	font-size: 8px;
 }
 
+#endGameWin {
+	color: #000;
+	font-size: 8px;
+}
+
+#endGameLose {
+	color: #000;
+	font-size: 8px;
+}
+
 footer {
 	background: #111;
 	text-align: center;
