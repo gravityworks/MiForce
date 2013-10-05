@@ -96,19 +96,20 @@
 		var m_vetInterval = 0;
 		var m_gameLoopInterval = 0;
 
-		var m_contaminantSpeed = 800;
-		var m_oilSpeed = 800;
+		var m_contaminantSpeed = 1000;
+		var m_oilSpeed = 1000;
 		var m_policeSpeed = 3000;
 		var m_vetSpeed = 4000;
 
-		var m_contaminantDuration = 700;
+		var m_contaminantDuration = 1000;
 		var m_oilDuration = 1000;
 		var m_policeDuration = 2000;
-		var m_vetDuration = 900;
+		var m_vetDuration = 1000;
 		var m_vetSoundDuration = 30000;
 
 		var levelDuration = 15000; // level duration
 		var levelScore = 10;
+		var levelIncrease = 10;
 		var currLevel = 1;
 		
 		var m_coin = document.createElement('audio');
@@ -184,7 +185,6 @@
                     // Attaching a click event to the current marker
                     google.maps.event.addListener(marker, "click", function (e) {
 						var score = parseInt(jQuery("#spnScore").text());
-						console.log(score);
 						sound.play();
 						score = score + scoreValue;
 						jQuery("#spnScore").text(score);
@@ -205,10 +205,7 @@
 		}
 		
 		function endGame() {
-			clearInterval(m_contaminantInterval);
-			clearInterval(m_oilInterval);
-			clearInterval(m_policeInterval);
-			clearInterval(m_vetInterval);
+			clearintervals();
 			clearInterval(m_gameLoopInterval);
 
 			$("#finalScore").text(jQuery("#spnScore").text());
@@ -220,30 +217,31 @@
 		
 		function gameLoop() {
 			if (currLevel >= 10){
-				$(".endGameWin").click();
 				endGame();
+				$(".endGameWin").click();
 			}
 			
 			var currScore = parseInt(jQuery("#spnScore").text());
 			if (currScore > levelScore) {
-				m_contaminantSpeed = m_contaminantSpeed - (m_contaminantSpeed * .1);
-				m_oilSpeed = m_oilSpeed - (m_oilSpeed * .1);
-				m_policeSpeed = m_policeSpeed - (m_policeSpeed * .1);
-				m_vetSpeed = m_vetSpeed - (m_vetSpeed * .1);
+				m_contaminantSpeed = m_contaminantSpeed - (m_contaminantSpeed * .05);
+				m_oilSpeed = m_oilSpeed - (m_oilSpeed * .05);
+				m_policeSpeed = m_policeSpeed - (m_policeSpeed * .05);
+				m_vetSpeed = m_vetSpeed - (m_vetSpeed * .05);
 
-				m_contaminantDuration = m_contaminantDuration - (m_contaminantDuration * .1);
-				m_oilDuration = m_oilDuration - (m_oilDuration * .1);
-				m_policeDuration = m_policeDuration - (m_policeDuration * .1);
-				m_vetDuration = m_vetDuration - (m_vetDuration * .1);
+				m_contaminantDuration = m_contaminantDuration - (m_contaminantDuration * .05);
+				m_oilDuration = m_oilDuration - (m_oilDuration * .05);
+				m_policeDuration = m_policeDuration - (m_policeDuration * .05);
+				m_vetDuration = m_vetDuration - (m_vetDuration * .05);
 
 				updateLevelSpeed();
 
 				jQuery("#spnLvl").text(currLevel++);
-				levelScore = levelScore + levelScore;
+				levelScore = levelScore + levelIncrease;
+				console.log(levelScore);
 			} else {
 				// end game
-				$(".endGameLose").click();
 				endGame();
+				$(".endGameLose").click();
 			}
 		}
 		
@@ -365,10 +363,18 @@
 
 		function updateLevelSpeed() {
 			m_levelUpSound.play();
+			clearIntervals();
 			m_contaminantInterval = setInterval(randomContaminant,m_contaminantSpeed);
 			m_oilInterval = setInterval(randomOil,m_oilSpeed);
 			m_vetInterval = setInterval(randomVet,m_vetSpeed);
 			m_policeInterval = setInterval(randomPolice,m_policeSpeed);	
+		}
+
+		function clearIntervals() {
+			clearInterval(m_contaminantInterval);
+			clearInterval(m_oilInterval);
+			clearInterval(m_vetInterval);
+			clearInterval(m_policeInterval);
 		}
 		
 		google.maps.event.addDomListener(window, 'load', initialize);
