@@ -19,34 +19,47 @@
 		<div style="display:none;">
 			<div id="inline">
 				<div>
-					Michigan is in trouble! Oil wells and contaminated sites are all around our state. 
-					Help us put out the fires by clicking on the icons to receive points and increment your level. After two 		minutes, gameplay is done.
+					<p>Michigan is in trouble!</p>
+					<p>
+						 Wells and contaminated sites are all around. 
+					</p>
+					<p>
+						Help us put out the fires by clicking on <br />
+						the icons to receive points and increment <br />
+						your level. After 	two minutes, gameplay <br />
+						is done.
+					</p>
 					<br />
 				</div>
 				
 				<div id="images">
 					<div>
-						<img src="images/oil.png" /> Oil and Gas Wells + 1 point
+						<img src="images/oil.png" class="popupImage"/><span class="popupText">Oil and Gas Wells + 1 point</span>
 					</div>
 					<div>
-						<img src="images/toxic.png" /> Contaminated Sites + 5 points
+						<img src="images/toxic.png" class="popupImage" /><span class="popupText">Contaminated Sites + 5 points</span>
 					</div>
 					<div>
-						<img src="images/vet.png" />County Veteran Population - 1 point
+						<img src="images/vet.png" class="popupImage" /><span class="popupText">County Veteran Population - 1 point</span>
 					</div>
 					<div>
-						<img src="images/police.png" />State Police Posts Loose all points!
+						<img src="images/police.png" class="popupImage" /><span class="popupText">State Police Posts Loose all points!</span>
 					</div>
-					<div id="start-container">
+					<div class="start-container">
 						<span id="btnStart" class="start">Start</span>	
 					</div>
 				</div>
 			</div>
 			<div id="endGameLose">
-				Game over!! You Lose. Not enough levels meet. 
+				Game over!! You Lose. Final Score <span class='finalScore'></span>
+				<span class="start">Play again?</span>	
 			</div>
 			<div id="endGameWin">
 				Congratulations you beat the game!
+				Final Score <span class='finalScore'></span>
+				<div>
+					<span class="start">Play again?</span>	
+				</div>
 			</div>
 		</div>
 			
@@ -59,8 +72,6 @@
 			<a class='endGameWin' href="#endGameWin" style="display:none;">Help</a>		
 			<a class='endGameLose' href="#endGameLose" style="display:none;">Help</a>		
 		</header>
-		<div id="status" style="display: none"></div>
-		<div id="end" style="display:none;">Thanks for playing your score is <span id='finalScore'></span></div>
 		<div class="map-container">
     		<div id="map-canvas"></div>
     	</div>
@@ -127,7 +138,7 @@
 			$(".endGameWin").colorbox({inline:true, width:"95%"});
 			$(".inline").click();	// initial lightbox
 				
-			$("#btnStart").click(function(){
+			$(".start").click(function(){
 				startGame();
 			});
 			
@@ -188,13 +199,11 @@
 						sound.play();
 						score = score + scoreValue;
 						jQuery("#spnScore").text(score);
-						jQuery("#status").text(marker.title);
-					
+						
 						var highScore = jQuery("#spnHighScore").text(score);
 						
 						if (highScore < score){
-							jQuery("#spnHighScore").text(highScore);
-							
+							jQuery("#spnHighScore").text(highScore);	
 						}
 						
 						marker.setMap(null);    
@@ -208,8 +217,7 @@
 			clearintervals();
 			clearInterval(m_gameLoopInterval);
 
-			$("#finalScore").text(jQuery("#spnScore").text());
-			$("#end").show();
+			$(".finalScore").text(jQuery("#spnScore").text());
 			m_background.pause();
 			m_background.currentTime = 0;
 			m_gameOverSound.play();
