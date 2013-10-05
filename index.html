@@ -10,14 +10,45 @@
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 	<script type="text/javascript" src="http://www.datejs.com/build/date.js"></script>
 
+	<link rel="stylesheet" href="http://www.jacklmoore.com/colorbox/example1/colorbox.css" />
+	<script src="http://www.jacklmoore.com/colorbox/jquery.colorbox.js"></script>
+	
 	</head>
 	
 	<body>
+		<div style="display:none;">
+			<div id="inline">
+				<div>
+					Michigan is in trouble! Oil wells and contaminated sites are all around our state. 
+					Help us put out the fires by clicking on the icons to receive points and increment your level. After two 		minutes, gameplay is done.
+				</div>
+				
+				<div>
+					<img src="images/oil.png" /> Oil and Gas Wells + 1 point
+				</div>
+				<div>
+					<img src="images/toxic.png" /> Part 201 Contaminated Sites + 5 points
+				</div>
+				<div>
+					<img src="images/vet.png" />County Veteran Population - 1 point
+				</div>
+				<div>
+					<img src="images/police.png" />State Police Posts Loose all points!
+				</div>
+				<div id="start-container">
+					<span id="btnStart" class="start">Start</span>	
+				</div>
+			</div>
+			<div id="endGame">
+			</div>
+		</div>
+			
 		<header class="align-center">
 			Lvl	<span id="spnLvl">0</span>
 			Score <span id="spnScore">0</span>			
 			High Score <span id="spnHighScore">0</span>
-			<span id="btnStart" class="start">Start</span>			
+		
+			<a class='inline' href="#inline" style="display:none;">Help</a>		
 		</header>
 		<div id="status" style="display: none"></div>
 		<div id="end" style="display:none;">Thanks for playing your score is <span id='finalScore'></span></div>
@@ -80,6 +111,11 @@
 		var m_endTime = new Date();
 		
 		$(document).ready(function(){
+		//	$(".ajax").colorbox();
+		
+			$(".inline").colorbox({inline:true, width:"50%"});
+				$(".inline").click();
+				
 			$("#btnStart").click(function(){
 				startGame();
 			});
@@ -305,6 +341,7 @@
 		}
 		
 		function startGame() {
+			parent.$.fn.colorbox.close();
 			m_endTime = new Date(new Date().getTime() + (2 * 60000));
 
 			loadContaminant();
