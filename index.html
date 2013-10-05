@@ -37,16 +37,22 @@
 					<div>
 						<img src="images/police.png" />State Police Posts Loose all points!
 					</div>
-					<div id="start-container">
+					<div class="start-container">
 						<span id="btnStart" class="start">Start</span>	
 					</div>
 				</div>
 			</div>
 			<div id="endGameLose">
 				Game over!! You Lose. Not enough levels meet. 
+				<div class="start-container">
+					<span class="start">Play again?</span>	
+				</div>
 			</div>
 			<div id="endGameWin">
 				Congratulations you beat the game!
+				<div class="start-container">
+					<span class="start">Play again?</span>	
+				</div>
 			</div>
 		</div>
 			
@@ -126,7 +132,7 @@
 			$(".endGameWin").colorbox({inline:true, width:"95%"});
 			$(".inline").click();	// initial lightbox
 				
-			$("#btnStart").click(function(){
+			$(".start").click(function(){
 				startGame();
 			});
 			

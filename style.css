@@ -445,7 +445,8 @@ header {
 #images{
 	margin-top: 30px;
 }
-#start-container{
+
+.start-container{
 	margin-left:40px;
 	margin-top: 70px;
 	padding-top: 15px;
