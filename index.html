@@ -43,16 +43,13 @@
 				</div>
 			</div>
 			<div id="endGameLose">
-				Game over!! You Lose. Not enough levels meet. 
-				<div class="start-container">
-					<span class="start">Play again?</span>	
-				</div>
+				Game over!! You Lose. Final Score <span class='finalScore'></span>
+				<span class="start">Play again?</span>	
 			</div>
 			<div id="endGameWin">
 				Congratulations you beat the game!
-				<div class="start-container">
-					<span class="start">Play again?</span>	
-				</div>
+				Final Score <span class='finalScore'></span>
+				<span class="start">Play again?</span>	
 			</div>
 		</div>
 			
@@ -65,8 +62,6 @@
 			<a class='endGameWin' href="#endGameWin" style="display:none;">Help</a>		
 			<a class='endGameLose' href="#endGameLose" style="display:none;">Help</a>		
 		</header>
-		<div id="status" style="display: none"></div>
-		<div id="end" style="display:none;">Thanks for playing your score is <span id='finalScore'></span></div>
 		<div class="map-container">
     		<div id="map-canvas"></div>
     	</div>
@@ -194,13 +189,11 @@
 						sound.play();
 						score = score + scoreValue;
 						jQuery("#spnScore").text(score);
-						jQuery("#status").text(marker.title);
-					
+						
 						var highScore = jQuery("#spnHighScore").text(score);
 						
 						if (highScore < score){
-							jQuery("#spnHighScore").text(highScore);
-							
+							jQuery("#spnHighScore").text(highScore);	
 						}
 						
 						marker.setMap(null);    
@@ -217,8 +210,7 @@
 			clearInterval(m_vetInterval);
 			clearInterval(m_gameLoopInterval);
 
-			$("#finalScore").text(jQuery("#spnScore").text());
-			$("#end").show();
+			$(".finalScore").text(jQuery("#spnScore").text());
 			m_background.pause();
 			m_background.currentTime = 0;
 			m_gameOverSound.play();
