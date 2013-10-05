@@ -14,6 +14,7 @@
 	
 	<body>
 		<header class="align-center">
+			Lvl	<span id="spnLvl">0</span>
 			Score <span id="spnScore">0</span>			
 			High Score <span id="spnHighScore">0</span>
 			<span id="btnStart" class="start">Start</span>			
@@ -42,12 +43,33 @@
 		var markers = []; 
 		var map;
 		var m_vetInterval = 0;
+
+		/* data sets */
+		var contaminant = [];
+		var oil = [];
+		var police = [];
+		var vet = [];
 		
 		var m_contaminantInterval = 0;
 		var m_oilInterval = 0;
 		var m_policeInterval = 0;
-		var m_vetStartInterval = 0;
+		var m_vetInterval = 0;
 		var m_gameLoopInterval = 0;
+
+		var m_contaminantSpeed = 800;
+		var m_oilSpeed = 800;
+		var m_policeSpeed = 50000;
+		var m_vetSpeed = 4000;
+
+		var m_contaminantDuration = 700;
+		var m_oilDuration = 1000;
+		var m_policeDuration = 1000;
+		var m_vetDuration = 900;
+		var m_vetSoundDuration = 30000;
+
+		var levelDuration = 20000; // level duration
+		var levelScore = 10;
+		var currLevel = 1;
 		
 		var m_coin = document.createElement('audio');
 		var m_fireSound = document.createElement('audio');
@@ -117,6 +139,7 @@
                     // Attaching a click event to the current marker
                     google.maps.event.addListener(marker, "click", function (e) {
 						var score = parseInt(jQuery("#spnScore").text());
+						console.log(score);
 						sound.play();
 						score = score + scoreValue;
 						jQuery("#spnScore").text(score);
@@ -138,11 +161,10 @@
 		}
 		
 		function endGame() {
-			clearInterval(m_vetInterval);
 			clearInterval(m_contaminantInterval);
 			clearInterval(m_oilInterval);
 			clearInterval(m_policeInterval);
-			clearInterval(m_vetStartInterval);
+			clearInterval(m_vetInterval);
 			clearInterval(m_gameLoopInterval);
 			
 			$("#finalScore").text(jQuery("#spnScore").text());
@@ -151,9 +173,29 @@
 		}
 		
 		function gameLoop() {
-			var currentTime = new Date().getTime();
+			// var currentTime = new Date().getTime();
 			
-			if (m_endTime <= currentTime){
+			// if (m_endTime <= currentTime){
+			// 	endGame();
+			// }
+			var currScore = parseInt(jQuery("#spnScore").text());
+			if (currScore > levelScore) {
+				m_contaminantSpeed = m_contaminantSpeed - (m_contaminantSpeed * .1);
+				m_oilSpeed = m_oilSpeed - (m_oilSpeed * .1);
+				m_policeSpeed = m_policeSpeed - (m_policeSpeed * .1);
+				m_vetSpeed = m_vetSpeed - (m_vetSpeed * .1);
+
+				m_contaminantDuration = m_contaminantDuration - (m_contaminantDuration * .1);
+				m_oilDuration = m_oilDuration - (m_oilDuration * .1);
+				m_policeDuration = m_policeDuration - (m_policeDuration * .1);
+				m_vetDuration = m_vetDuration - (m_vetDuration * .1);
+
+				updateLevelSpeed();
+
+				jQuery("#spnLvl").text(currLevel++);
+				levelScore = levelScore + levelScore;
+			} else {
+				// end game
 				endGame();
 			}
 		}
@@ -164,15 +206,19 @@
                 url: "http://opendata.socrata.com/resource/2brv-dhpz.json?",
                 dataType: "json",
                 success: function (json) {
-					var random = Math.floor(Math.random() * ((json.length -1) - 0 + 1)) + 0;
-					var rootItem = json[random];
-					var location = rootItem.location_1;
-					var titleString = "Great Job! You helped eliminate " + rootItem.pollutants + " at " + rootItem.name;
-					$("#info").append("<span>" + rootItem.county + " - Michigan is containmented at " + rootItem.name + " " + rootItem.score + "</span>");
-					// build the generic map point
-					buildMapPoint(location.latitude, location.longitude, titleString, 5, contaminantImage,700,m_fireSound);
+                	contaminant = json;
                 }
             });
+        }
+
+        function randomContaminant () {
+			var random = Math.floor(Math.random() * ((contaminant.length -1) - 0 + 1)) + 0;
+			var rootItem = contaminant[random];
+			var location = rootItem.location_1;
+			var titleString = "Great Job! You helped eliminate " + rootItem.pollutants + " at " + rootItem.name;
+			$("#info").append("<span>" + rootItem.county + " - Michigan is containmented at " + rootItem.name + " " + rootItem.score + "</span>");
+			// build the generic map point
+			buildMapPoint(location.latitude, location.longitude, titleString, 5, contaminantImage,m_contaminantDuration,m_fireSound);
         }
 
 		function loadOil() {
@@ -181,15 +227,19 @@
                 url: "http://opendata.socrata.com/resource/ixt6-qcyf.json",
                 dataType: "json",
                 success: function (json) {
-					var random = Math.floor(Math.random() * ((json.length -1) - 0 + 1)) + 0;
-					var rootItem = json[random];
-					var location = rootItem.wellhole_top;
-					var titleString = "Great Job! You put out an oil fire at " + rootItem.coname; 
-					
-					// build the generic map point
-					buildMapPoint(location.latitude, location.longitude, titleString, 1, oilImage,2000,m_coin);
+                	oil = json;
                 }
             });
+        }
+
+        function randomOil() {
+        	var random = Math.floor(Math.random() * ((oil.length -1) - 0 + 1)) + 0;
+			var rootItem = oil[random];
+			var location = rootItem.wellhole_top;
+			var titleString = "Great Job! You put out an oil fire at " + rootItem.coname; 
+			
+			// build the generic map point
+			buildMapPoint(location.latitude, location.longitude, titleString, 1, oilImage,m_oilDuration,m_coin);
         }
 
 		function loadVets() {
@@ -199,26 +249,28 @@
 			music.volume = .2;
 			music.play();
 			m_loadVets = true;
+			jQuery.ajax({
+                type: "Get",
+                url: "http://opendata.socrata.com/resource/sh9h-hasz.json",
+                dataType: "json",
+                success: function (json) {
+                	vet = json;
+                }
+            });
+        }
+
+        function randomVet() {
+        	//m_vetInterval = setInterval(function(){
+				var random = Math.floor(Math.random() * ((vet.length -1) - 0 + 1)) + 0;
+				var rootItem = vet[random];
+				var location = rootItem.location_1;
+				var titleString = "Oh no, you got in the way of a vet trying to put out a fire. In " + rootItem.year + 
+					" there was a populate of " + rootItem.population + " in " + rootItem.county + " county"; 
 			
-			m_vetInterval = setInterval(function(){
-				jQuery.ajax({
-	                type: "Get",
-	                url: "http://opendata.socrata.com/resource/sh9h-hasz.json",
-	                dataType: "json",
-	                success: function (json) {
-						var random = Math.floor(Math.random() * ((json.length -1) - 0 + 1)) + 0;
-						var rootItem = json[random];
-						var location = rootItem.location_1;
-						var titleString = "Oh no, you got in the way of a vet trying to put out a fire. In " + rootItem.year + 
-							" there was a populate of " + rootItem.population + " in " + rootItem.county + " county"; 
-					
-						// build the generic map point
-						buildMapPoint(location.latitude, location.longitude, titleString, -1, vetImage, 900, m_vetSound);
-	                }
-	            });
-			},2000);
-			
-			setInterval(function(){clearInterval(m_vetInterval);}, 37000);
+				// build the generic map point
+				buildMapPoint(location.latitude, location.longitude, titleString, -1, vetImage, m_vetDuration, m_coin);
+			//}, 2000);
+			//setInterval(function(){clearInterval(m_vetInterval);}, m_vetSoundDuration);
         }
 		
 		function loadPolice() {
@@ -227,16 +279,20 @@
                 url: "http://opendata.socrata.com/resource/b877-bq25.json",
                 dataType: "json",
                 success: function (json) {
-					var random = Math.floor(Math.random() * ((json.length -1) - 0 + 1)) + 0;
-					var rootItem = json[random];
-					var location = rootItem.location_1;
-					var titleString = "Oh no you distracted a police offer on route from " + rootItem.id; 
-					
-					// build the generic map point
-					var totalPoints = parseInt(jQuery("#spnScore").text()) * -1;
-					buildMapPoint(location.latitude, location.longitude, titleString, totalPoints, policeImage,2000, m_policeSound);
+                	police = json;
                 }
             });
+        }
+
+        function randomPolice() {
+			var random = Math.floor(Math.random() * ((police.length -1) - 0 + 1)) + 0;
+			var rootItem = police[random];
+			var location = rootItem.location_1;
+			var titleString = "Oh no you distracted a police offer on route from " + rootItem.id; 
+			
+			// build the generic map point
+			var totalPoints = parseInt(jQuery("#spnScore").text()) * -1;
+			buildMapPoint(location.latitude, location.longitude, titleString, totalPoints, policeImage,m_policeDuration, m_policeSound);
         }
 		
 		function loadSounds(){
@@ -250,16 +306,26 @@
 		
 		function startGame() {
 			m_endTime = new Date(new Date().getTime() + (2 * 60000));
+
+			loadContaminant();
+			loadOil();
+			loadVets();
+			loadPolice();
+
+			updateLevelSpeed(); // update the speed of icon sets
 			
-			m_contaminantInterval = setInterval(loadContaminant,800);
-			m_oilInterval = setInterval(loadOil,800);
-			m_vetStartInterval = setInterval(loadVets,50000);
-			m_policeInterval = setInterval(loadPolice,4000);	
-			m_gameLoopInterval = setInterval(gameLoop,1000);
+			m_gameLoopInterval = setInterval(gameLoop, levelDuration); // increase level - increase speed by 10%
 			m_background.play();
 			
-			jQuery("#spnScore").text("");
+			jQuery("#spnScore").text("0");
 			jQuery("#status").text("");
+		}
+
+		function updateLevelSpeed() {
+			m_contaminantInterval = setInterval(randomContaminant,m_contaminantSpeed);
+			m_oilInterval = setInterval(randomOil,m_oilSpeed);
+			m_vetInterval = setInterval(randomVet,m_vetSpeed);
+			m_policeInterval = setInterval(randomPolice,m_policeSpeed);	
 		}
 		
 		google.maps.event.addDomListener(window, 'load', initialize);
