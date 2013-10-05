@@ -112,7 +112,9 @@
 		var m_fireSound = document.createElement('audio');
 		var m_policeSound = document.createElement('audio');
 		var m_background = document.createElement('audio');
-
+		var m_levelUpSound = document.createElement('audio');
+		var m_gameOverSound = document.createElement('audio');
+		
 		var m_endTime = new Date();
 		
 		$(document).ready(function(){
@@ -205,11 +207,12 @@
 			clearInterval(m_policeInterval);
 			clearInterval(m_vetInterval);
 			clearInterval(m_gameLoopInterval);
-			
+
 			$("#finalScore").text(jQuery("#spnScore").text());
 			$("#end").show();
 			m_background.pause();
 			m_background.currentTime = 0;
+			m_gameOverSound.play();
 		}
 		
 		function gameLoop() {
@@ -329,11 +332,14 @@
         }
 		
 		function loadSounds(){
-			m_policeSound.setAttribute('src', 'http://www.mediacollege.com/downloads/sound-effects/vehicle/siren/firetruck-01.wav');
-			m_fireSound.setAttribute('src', 'http://www.mediacollege.com/downloads/sound-effects/household/fire-extinguisher-01.wav');
-			m_coin.setAttribute('src', 'http://www.mediacollege.com/downloads/sound-effects/money/coin-03.wav');
+			m_levelUpSound.setAttribute('src', 'sounds/levelup.wav');
+			m_gameOverSound.setAttribute('src', 'sounds/gameover.wav');
+			
+			m_policeSound.setAttribute('src', 'sounds/police.wav');
+			m_fireSound.setAttribute('src', 'sounds/toxic.wav');
+			m_coin.setAttribute('src', 'sounds/coin.wav');
 			m_background.setAttribute('src', 'sounds/back.wav');
-			m_background.setAttribute('loop', 'loop');
+			m_background.setAttribute('loop', 'loop');	
 		}
 		
 		function startGame() {
@@ -355,6 +361,7 @@
 		}
 
 		function updateLevelSpeed() {
+			m_levelUpSound.play();
 			m_contaminantInterval = setInterval(randomContaminant,m_contaminantSpeed);
 			m_oilInterval = setInterval(randomOil,m_oilSpeed);
 			m_vetInterval = setInterval(randomVet,m_vetSpeed);
