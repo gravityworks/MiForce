@@ -201,7 +201,7 @@
 						score = score + scoreValue;
 						jQuery("#spnScore").text(score);
 						
-						var highScore = jQuery("#spnHighScore").text(score);
+						var highScore = jQuery("#spnHighScore").text();
 						
 						if (highScore < score){
 							jQuery("#spnHighScore").text(highScore);	
