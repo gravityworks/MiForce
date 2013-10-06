@@ -475,7 +475,7 @@ header {
    
 }
 
-    #inline p, #inline h1 {
+    #inline h1 {
         text-align: center;
         padding: 0px 20px;
     }
@@ -554,7 +554,7 @@ header {
 #inline {
     color: #000;
     font-size: 5px;
-	margin-left: -60px;
+	margin-left: 5px;
 }
 
 #endGameWin {
