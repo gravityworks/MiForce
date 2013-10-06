@@ -113,7 +113,9 @@
 		var m_oilSpeed = 1000;
 		var m_policeSpeed = 3000;
 		var m_vetSpeed = 4000;
-
+		
+		var fadeOutTime = 3000;
+		
 		var m_contaminantDuration = 1000;
 		var m_oilDuration = 1000;
 		var m_policeDuration = 2000;
@@ -237,7 +239,9 @@
 						}
 						
 						var title = marker.getTitle();
-						$("#notification-box").append("<p class='notification'>" + title + "</p>");
+						$("#notification-box").show();
+						$("#notification-box").html("<p class='notification'>" + title + "</p>");
+						$("#notification-box").fadeOut(fadeOutTime);
 						marker.setMap(null);    
 						   
                     });
@@ -250,6 +254,8 @@
 			clearIntervals();
 			clearInterval(m_gameLoopInterval);
 			currLevel = 1;
+			jQuery("#spnLvl").text("1");
+			
 			$("#notification-box").empty(); 
 
 			$(".finalScore").text(jQuery("#spnScore").text());
@@ -263,7 +269,6 @@
 			m_background.pause();
 			m_background.currentTime = 0;
 			m_gameOverSound.play();
-
 		}
 		
 		function gameLoop() {
@@ -356,8 +361,8 @@
 			var random = Math.floor(Math.random() * ((vet.length -1) - 0 + 1)) + 0;
 			var rootItem = vet[random];
 			var location = rootItem.location_1;
-			var titleString = "Oh no, you got in the way of a vet trying to put out a fire! In " + rootItem.year + 
-					" there was a population of " + rootItem.population + " in " + rootItem.county + " county"; 
+			var titleString = "Oh no, you got in the way of a vet trying to put out a fire in " 
+					 + rootItem.county + " county"; 
 			
 			// build the generic map point
 			buildMapPoint(location.latitude, location.longitude, titleString, -1, vetImage, m_vetDuration, m_coin);

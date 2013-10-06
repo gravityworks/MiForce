@@ -472,7 +472,7 @@ header {
 
 #inline {
     width: 400px;
-    margin: 10px auto 10px auto;
+   
 }
 
     #inline p, #inline h1 {
@@ -554,6 +554,7 @@ header {
 #inline {
     color: #000;
     font-size: 6px;
+	margin-left: -50px;
 }
 
 #endGameWin {
@@ -588,6 +589,7 @@ footer {
 
 #notification-box {
     position: absolute;
+	padding-left: 20px;
     width: 100px;
     height: 200px;
     z-index: 200;
