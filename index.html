@@ -19,43 +19,44 @@
 		<div style="display:none;">
 			<div id="inline" class="popupBox">
 				<div>
-					<p>Michigan is in trouble!</p>
+					<h1 class="blink">MICHIGAN IS IN TROUBLE!</h1>
 					<p>
-						 Wells and contaminated sites are all around. 
+						 Flaming oil wells and contaminated sites abound. 
 					</p>
 					<p>
-						Help us put out the fires by clicking on <br />
-						the icons to receive points and increment <br />
-						your level. After 	two minutes, gameplay <br />
-						is done.
+						Help us put out the fires by clicking on 
+						the icons to receive points and increment 
+						your level. You have two minutes to extinguish 
+						as many fires as possible. 
 					</p>
 					<br />
 				</div>
 				
 				<div id="images">
 					<div>
-						<img src="images/oil.png" class="popupImage"/><span class="popupText">Oil and Gas Wells + 1 point</span>
+						<img src="images/oil.png" class="popupImage"/><span class="popupText">OIL AND GAS WELLS: + 1 point</span>
 					</div>
 					<div>
-						<img src="images/toxic.png" class="popupImage" /><span class="popupText">Contaminated Sites + 5 points</span>
+						<img src="images/toxic.png" class="popupImage" /><span class="popupText">CONTAMINATED SITES: + 5 points</span>
 					</div>
 					<div>
-						<img src="images/vet.png" class="popupImage" /><span class="popupText">County Veteran Population - 1 point</span>
+						<img src="images/vet.png" class="popupImage" /><span class="popupText">COUNTY VETERAN POPULATION: - 1 point</span>
 					</div>
 					<div>
-						<img src="images/police.png" class="popupImage" /><span class="popupText">State Police Posts Loose all points!</span>
-					</div>
-					<div class="start-container">
-						<span id="btnStart" class="start">Start</span>	
+						<img src="images/police.png" class="popupImage" /><span class="popupText">STATE POLICE POSTS: Lose all points!</span>
 					</div>
 				</div>
+                <div class="start-container start-button">
+				    <span id="btnStart" class="start">Start</span>	
+			    </div>
 			</div>
 			<div id="endGameLose"  class="popupBox">
-				Game over!! You Lose. Final Score <span class='finalScore'></span>
+				<h3 class="blink">GAME OVER: YOU LOST</h3>
+                Final Score: <span class='finalScore'></span>
 				<span class="start">Play again?</span>	
 			</div>
 			<div id="endGameWin" class="popupBox">
-				Congratulations you beat the game!
+				<h3 class="blink-success">CONGRATULATIONS: YOU WON</h3>
 				Final Score <span class='finalScore'></span>
 				<div>
 					<span class="start">Play again?</span>	
@@ -72,12 +73,13 @@
 			<a class='endGameWin' href="#endGameWin" style="display:none;">Help</a>		
 			<a class='endGameLose' href="#endGameLose" style="display:none;">Help</a>		
 		</header>
+        <div id="notification-box"></div>
 		<div class="map-container">
-    		<div id="map-canvas"></div>
+    		<div id="map-canvas"></div>  
     	</div>
 		<div id="info" style="display:none;"></div>
 		<footer>
-			Developed by Gravity Works <img src="images/smallgear.png" style="width: 20px; height: auto; vertical-align: middle" />
+			Developed by Gravity Works <img id="gravWorks" src="images/smallgear.png" style="width: 20px; height: auto; vertical-align: middle" />
 		</footer>
   	</body>
 	<script>
@@ -140,10 +142,25 @@
 			$('#cboxClose').remove();
 		
 			$(".start").click(function(){
-				startGame();
+			    startGame();
+			    positionNotifications(); 
 			});
 			
 			loadSounds();
+
+		    //onclick e.e.
+			$("#gravWorks").click(function () {
+			    var canvasImage = $('#map-canvas img');
+			    var canvasImagePosition = canvasImage.offset();
+			    $("body").prepend("<img id='gravWorksLocation' src='images/smallgear.png' />");
+			    $("#notification-box").append("<p id='gravWorksAddress'>1132 N. Washington Lansing, MI</p>"); 
+			    $("#gravWorksLocation").css({
+			        "left": (canvasImagePosition.left + 225) + "px",
+			        "top": (canvasImagePosition.top + 325) + "px",
+			        "z-index": 2000
+			    });
+			    $("#gravWorksAddress, #gravWorksLocation").delay(4000).fadeOut("slow");
+			});
 		});
 	 
 	    function initialize() {
@@ -158,20 +175,30 @@
 	            mapTypeId: google.maps.MapTypeId.ROADMAP
 	        };
 	        map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
-	
+
 			var imageBounds = new google.maps.LatLngBounds(
 			      new google.maps.LatLng(41.31082388091818, -89.87939453125),
 			      new google.maps.LatLng(48.08508535995383, -82.001953125));
-			
-		
+
 		 	styleOverlay = new google.maps.GroundOverlay('images/back.png',imageBounds);
-		  	styleOverlay.setMap(map);
+		 	styleOverlay.setMap(map);
+
+	 	
+	    }
+
+	    function positionNotifications() {
+	        var canvasImage = $('#map-canvas img');
+	        var canvasImagePosition = canvasImage.offset();
+	        $("#notification-box").css({
+	            "left": canvasImagePosition.left + "px",
+	            "top": (canvasImagePosition.top + 160) + "px"
+	        });
 	    }
 
 		function deleteMarker(){
 		  markers[0].setMap(null);
 		}
-		
+
 		function buildMapPoint(latitude, longitude, title, scoreValue, imagePath,timeToKeepOnScreen, sound){
 				latLng = new google.maps.LatLng(latitude, longitude);
 
@@ -196,6 +223,8 @@
 
                     // Attaching a click event to the current marker
                     google.maps.event.addListener(marker, "click", function (e) {
+
+                        $(".notification").fadeOut("slow"); 
 						var score = parseInt(jQuery("#spnScore").text());
 						sound.play();
 						score = score + scoreValue;
@@ -207,22 +236,34 @@
 							jQuery("#spnHighScore").text(highScore);	
 						}
 						
+						var title = marker.getTitle();
+						$("#notification-box").append("<p class='notification'>" + title + "</p>");
 						marker.setMap(null);    
 						   
                     });
 
                 })(marker, location);
+
 		}
 		
 		function endGame() {
 			clearIntervals();
 			clearInterval(m_gameLoopInterval);
 			currLevel = 1;
-			
+			$("#notification-box").empty(); 
+
 			$(".finalScore").text(jQuery("#spnScore").text());
+			var finalScore= jQuery("#spnScore").text();
+			var highScore = jQuery("#spnHighScore").text();
+
+			if (highScore == "0" || finalScore > highScore) {
+			    $("#spnHighScore").text(finalScore);
+			} 
+
 			m_background.pause();
 			m_background.currentTime = 0;
 			m_gameOverSound.play();
+
 		}
 		
 		function gameLoop() {
@@ -273,7 +314,7 @@
 			var rootItem = contaminant[random];
 			var location = rootItem.location_1;
 			var titleString = "Great Job! You helped eliminate " + rootItem.pollutants + " at " + rootItem.name;
-			$("#info").append("<span>" + rootItem.county + " - Michigan is containmented at " + rootItem.name + " " + rootItem.score + "</span>");
+			$("#info").append("<span>" + rootItem.county + " - Michigan is contaminated at " + rootItem.name + " " + rootItem.score + "</span>");
 			// build the generic map point
 			buildMapPoint(location.latitude, location.longitude, titleString, 5, contaminantImage,m_contaminantDuration,m_fireSound);
         }
@@ -293,7 +334,7 @@
         	var random = Math.floor(Math.random() * ((oil.length -1) - 0 + 1)) + 0;
 			var rootItem = oil[random];
 			var location = rootItem.wellhole_top;
-			var titleString = "Great Job! You put out an oil fire at " + rootItem.coname; 
+			var titleString = "Great Job! You put out an oil fire at " + rootItem.coname + " in " + rootItem.county + " county"; 
 			
 			// build the generic map point
 			buildMapPoint(location.latitude, location.longitude, titleString, 1, oilImage,m_oilDuration,m_coin);
@@ -315,8 +356,8 @@
 			var random = Math.floor(Math.random() * ((vet.length -1) - 0 + 1)) + 0;
 			var rootItem = vet[random];
 			var location = rootItem.location_1;
-			var titleString = "Oh no, you got in the way of a vet trying to put out a fire. In " + rootItem.year + 
-					" there was a populate of " + rootItem.population + " in " + rootItem.county + " county"; 
+			var titleString = "Oh no, you got in the way of a vet trying to put out a fire! In " + rootItem.year + 
+					" there was a population of " + rootItem.population + " in " + rootItem.county + " county"; 
 			
 			// build the generic map point
 			buildMapPoint(location.latitude, location.longitude, titleString, -1, vetImage, m_vetDuration, m_coin);
@@ -337,7 +378,7 @@
 			var random = Math.floor(Math.random() * ((police.length -1) - 0 + 1)) + 0;
 			var rootItem = police[random];
 			var location = rootItem.location_1;
-			var titleString = "Oh no you distracted a police offer on route from " + rootItem.id; 
+			var titleString = "Oh, no! You distracted a police offer en route from " + rootItem.id; 
 			
 			// build the generic map point
 			var totalPoints = parseInt(jQuery("#spnScore").text()) * -1;
@@ -390,5 +431,6 @@
 		}
 		
 		google.maps.event.addDomListener(window, 'load', initialize);
+
   </script>
 </html>
