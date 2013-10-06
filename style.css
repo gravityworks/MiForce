@@ -554,7 +554,7 @@ header {
 #inline {
     color: #000;
     font-size: 5px;
-	margin-left: -50px;
+	margin-left: -60px;
 }
 
 #endGameWin {
@@ -616,5 +616,4 @@ footer {
 
 .hack {
 	margin-left:25px;
-	text-align: left; 
 }
