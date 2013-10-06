@@ -456,7 +456,7 @@ header {
 }
 
 #images {
-    margin: 15px 0px 0px 59px;
+    margin: 15px 0px 0px 0px;
 }
 
 .start-container {
@@ -476,6 +476,7 @@ header {
 }
 
     #inline h1 {
+        text-align: left;
         padding: 0px 20px;
     }
 
