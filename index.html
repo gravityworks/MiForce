@@ -50,6 +50,9 @@
 				    <span id="btnStart" class="start">Start</span>	
 			    </div>
 			</div>
+			<div id="diffculity" class="popupBox">
+				KENT
+			</div>
 			<div id="endGameLose"  class="popupBox">
 				<h3 class="blink">GAME OVER: YOU LOST</h3>
                 Final Score: <span class='finalScore'></span>
@@ -71,7 +74,9 @@
 		
 			<a class='inline' href="#inline" style="display:none;">Help</a>		
 			<a class='endGameWin' href="#endGameWin" style="display:none;">Help</a>		
-			<a class='endGameLose' href="#endGameLose" style="display:none;">Help</a>		
+			<a class='endGameLose' href="#endGameLose" style="display:none;">Help</a>	
+			<a class = 'diffculity' href="#diffculity" style="display:none;">Diffculity</a>
+				
 		</header>
         <div id="notification-box"></div>
 		<div class="map-container">
@@ -146,7 +151,8 @@
 			$('#cboxClose').remove();
 		
 			$(".start").click(function(){
-			    startGame();
+				$(".diffculity").click();
+			    //startGame();
 			    positionNotifications(); 
 			});
 			
