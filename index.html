@@ -186,8 +186,10 @@
 
 		 	styleOverlay = new google.maps.GroundOverlay('images/back.png',imageBounds);
 		 	styleOverlay.setMap(map);
-
-	 	
+ 
+		 	map.event.addListener(map, 'click', function() {
+				console.log('h');
+			});
 	    }
 
 	    function positionNotifications() {
