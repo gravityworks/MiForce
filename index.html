@@ -126,6 +126,7 @@
 		var levelScore = 10;
 		var levelIncrease = 13;
 		var currLevel = 1;
+		var whatWasClicked = [];
 		
 		var m_coin = document.createElement('audio');
 		var m_fireSound = document.createElement('audio');
@@ -243,7 +244,8 @@
 						$("#notification-box").html("<p class='notification'>" + title + "</p>");
 						$("#notification-box").fadeOut(fadeOutTime);
 						marker.setMap(null);    
-						   
+						whatWasClicked.push(marker.icon);
+						 
                     });
 
                 })(marker, location);
