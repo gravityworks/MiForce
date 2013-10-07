@@ -546,9 +546,8 @@ header {
 }
 
 #map-canvas {
-	margin:0 auto;
-	height: 340px;
-	width: 338px;
+	height: 100%;
+	width: 100%;
 }
 
 #inline {

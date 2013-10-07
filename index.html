@@ -127,7 +127,7 @@
 		var levelIncrease = 13;
 		var currLevel = 1;
 		var whatWasClicked = [];
-		var clickCount = 0;
+		var m_clickCount = 0;
 		
 		var m_coin = document.createElement('audio');
 		var m_fireSound = document.createElement('audio');
@@ -168,6 +168,29 @@
 		});
 	 
 	    function initialize() {
+
+	    	var styles = [
+			  {
+			    "stylers": [
+			      { "color": "#000000" }
+			    ]
+			  },{
+			    "featureType": "water",
+			    "stylers": [
+			      { "weight": 0.1 },
+			      { "color": "#00e7ff" }
+			    ]
+			  },{
+			    "featureType": "water",
+			    "stylers": [
+			      { "color": "#5ffff0" }
+			    ]
+			  },{
+			  }
+			];
+
+			var styledMap = new google.maps.StyledMapType(styles, {name: "Styled Map"});
+
 	        var mapOptions = { 
 	            zoom: 6,
 				scrollwheel: false,
@@ -176,20 +199,26 @@
 	            disableDefaultUI: true,
 				disableDoubleClickZoom: true,
 	            center: new google.maps.LatLng(44.130821, -85.749512),
-	            mapTypeId: google.maps.MapTypeId.ROADMAP
+	            mapTypeControlOptions: {
+			      mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+			    }
 	        };
 	        map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
 
+	        map.mapTypes.set('map_style', styledMap);
+  			map.setMapTypeId('map_style');
+	        /*
 			var imageBounds = new google.maps.LatLngBounds(
 			      new google.maps.LatLng(41.31082388091818, -89.87939453125),
 			      new google.maps.LatLng(48.08508535995383, -82.001953125));
 
 		 	styleOverlay = new google.maps.GroundOverlay('images/back.png',imageBounds);
-		 	styleOverlay.setMap(map);
- 
-		 	map.event.addListener(map, 'click', function() {
-				console.log('h');
+		 	styleOverlay.setMap(map); */
+		
+			google.maps.event.addListener(map, 'click', function() {
+				m_clickCount = m_clickCount + 1;
 			});
+		
 	    }
 
 	    function positionNotifications() {
