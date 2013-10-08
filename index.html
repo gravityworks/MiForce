@@ -47,13 +47,13 @@
 					</div>
 				</div>
                 <div class="start-container start-button">
-				    <span id="btnStart" class="novice">novice</span>	
+				    <span id="btnStart" class="novice">play novice</span>	
 			    </div>
                 <div class="start-container start-button">
-				    <span id="btnStart" class="intermediate">intermediate</span>	
+				    <span id="btnStart" class="intermediate">play intermediate</span>	
 			    </div>
                 <div class="start-container start-button">
-				    <span id="btnStart" class="expert">expert</span>	
+				    <span id="btnStart" class="expert">play expert</span>	
 			    </div>
 			</div>
 			<div id="diff" class="popupBox difficulty">
@@ -164,25 +164,23 @@
 			$('#cboxClose').remove();
 		
 			$(".novice").click(function(){
-//				parent.$.fn.colorbox.close();
-//				$(".difficulty").click();
 			    startGame(1);
 			    positionNotifications(); 
 			});
 
-
 			$(".intermediate").click(function(){
-//				parent.$.fn.colorbox.close();
-//				$(".difficulty").click();
 			    startGame(2);
 			    positionNotifications(); 
 			});
 
 			$(".expert").click(function(){
-//				parent.$.fn.colorbox.close();
-//				$(".difficulty").click();
 			    startGame(3);
 			    positionNotifications(); 
+			});
+
+			$(".start").click(function() {
+				startGame(difficulty);
+				positionNotifications();
 			});
 			
 			loadSounds();
