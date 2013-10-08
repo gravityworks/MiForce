@@ -460,10 +460,10 @@ header {
 }
 
 .start-container {
-    margin: 30px auto 0px 20px;
+    margin: 30px auto 0px 0px;
     padding-top: 15px;
     background: #333;
-    /*width: 120px;*/
+    width: 90%;
     height: 30px;
     text-align: center;
     cursor: pointer;
