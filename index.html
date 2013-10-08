@@ -47,10 +47,16 @@
 					</div>
 				</div>
                 <div class="start-container start-button">
-				    <span id="btnStart" class="start">Start</span>	
+				    <span id="btnStart" class="novice">novice</span>	
+			    </div>
+                <div class="start-container start-button">
+				    <span id="btnStart" class="intermediate">intermediate</span>	
+			    </div>
+                <div class="start-container start-button">
+				    <span id="btnStart" class="expert">expert</span>	
 			    </div>
 			</div>
-			<div id="diffculity" class="popupBox">
+			<div id="diff" class="popupBox difficulty">
 				KENT
 			</div>
 			<div id="endGameLose"  class="popupBox">
@@ -75,7 +81,7 @@
 			<a class='inline' href="#inline" style="display:none;">Help</a>		
 			<a class='endGameWin' href="#endGameWin" style="display:none;">Help</a>		
 			<a class='endGameLose' href="#endGameLose" style="display:none;">Help</a>	
-			<a class = 'diffculity' href="#diffculity" style="display:none;">Diffculity</a>
+			<a class = 'difficulty' href="#difficulty" style="display:none;">difficulty</a>
 				
 		</header>
         <div id="notification-box"></div>
@@ -108,6 +114,11 @@
 		var police = [];
 		var vet = [];
 		
+		var contaminantLoaded = false;
+		var oilLoaded = false;
+		var policeLoaded = false;
+		var vetLoaded = false;
+
 		var m_contaminantInterval = 0;
 		var m_oilInterval = 0;
 		var m_policeInterval = 0;
@@ -120,6 +131,8 @@
 		var m_vetSpeed = 4000;
 		
 		var fadeOutTime = 3000;
+
+		var difficulty = 1;
 		
 		var m_contaminantDuration = 1000;
 		var m_oilDuration = 1000;
@@ -150,9 +163,25 @@
 			$(".inline").click();	// initial lightbox
 			$('#cboxClose').remove();
 		
-			$(".start").click(function(){
-				$(".diffculity").click();
-			    //startGame();
+			$(".novice").click(function(){
+//				parent.$.fn.colorbox.close();
+//				$(".difficulty").click();
+			    startGame(1);
+			    positionNotifications(); 
+			});
+
+
+			$(".intermediate").click(function(){
+//				parent.$.fn.colorbox.close();
+//				$(".difficulty").click();
+			    startGame(2);
+			    positionNotifications(); 
+			});
+
+			$(".expert").click(function(){
+//				parent.$.fn.colorbox.close();
+//				$(".difficulty").click();
+			    startGame(3);
 			    positionNotifications(); 
 			});
 			
@@ -349,6 +378,7 @@
                 dataType: "json",
                 success: function (json) {
                 	contaminant = json;
+                	contaminantLoaded = true;
                 }
             });
         }
@@ -370,6 +400,7 @@
                 dataType: "json",
                 success: function (json) {
                 	oil = json;
+                	oilLoaded = true;
                 }
             });
         }
@@ -392,6 +423,7 @@
                 dataType: "json",
                 success: function (json) {
                 	vet = json;
+                	vetLoaded = true;
                 }
             });
         }
@@ -414,19 +446,22 @@
                 dataType: "json",
                 success: function (json) {
                 	police = json;
+                	policeLoaded = true;
                 }
             });
         }
 
         function randomPolice() {
-			var random = Math.floor(Math.random() * ((police.length -1) - 0 + 1)) + 0;
-			var rootItem = police[random];
-			var location = rootItem.location_1;
-			var titleString = "Oh, no! You distracted a police offer en route from " + rootItem.id; 
-			
-			// build the generic map point
-			var totalPoints = parseInt(jQuery("#spnScore").text()) * -1;
-			buildMapPoint(location.latitude, location.longitude, titleString, totalPoints, policeImage,m_policeDuration, m_policeSound);
+        	for (var i = 0; i < difficulty; i++) {
+				var random = Math.floor(Math.random() * ((police.length -1) - 0 + 1)) + 0;
+				var rootItem = police[random];
+				var location = rootItem.location_1;
+				var titleString = "Oh, no! You distracted a police offer en route from " + rootItem.id; 
+				
+				// build the generic map point
+				var totalPoints = parseInt(jQuery("#spnScore").text()) * -1;
+				buildMapPoint(location.latitude, location.longitude, titleString, totalPoints, policeImage,m_policeDuration, m_policeSound);
+        	}
         }
 		
 		function loadSounds(){
@@ -440,22 +475,29 @@
 			m_background.setAttribute('loop', 'loop');	
 		}
 		
-		function startGame() {
+		function startGame(d) {
 			parent.$.fn.colorbox.close();
 			m_endTime = new Date(new Date().getTime() + (2 * 60000));
+
+			difficulty = parseInt(d);
 
 			loadContaminant();
 			loadOil();
 			loadVets();
 			loadPolice();
 
-			updateLevelSpeed(); // update the speed of icon sets
-			
-			m_gameLoopInterval = setInterval(gameLoop, levelDuration); // increase level - increase speed by 10%
-			m_background.play();
-			
-			jQuery("#spnScore").text("0");
-			jQuery("#status").text("");
+			var gameInterval = setInterval(function() {
+				if (contaminantLoaded && oilLoaded && vetLoaded	&& policeLoaded) {
+					clearInterval(gameInterval);
+					updateLevelSpeed(); // update the speed of icon sets
+					
+					m_gameLoopInterval = setInterval(gameLoop, levelDuration); // increase level - increase speed by 10%
+					m_background.play();
+					
+					jQuery("#spnScore").text("0");
+					jQuery("#status").text("");
+				}
+			}, 100);
 		}
 
 		function updateLevelSpeed() {
