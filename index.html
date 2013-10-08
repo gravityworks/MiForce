@@ -155,6 +155,12 @@
 		var m_gameOverSound = document.createElement('audio');
 		
 		var m_endTime = new Date();
+
+		/* load datasets */
+		loadContaminant();
+		loadOil();
+		loadVets();
+		loadPolice();
 		
 		$(document).ready(function(){
 			$(".inline").colorbox({inline:true, width:"95%"});
@@ -478,11 +484,6 @@
 			m_endTime = new Date(new Date().getTime() + (2 * 60000));
 
 			difficulty = parseInt(d);
-
-			loadContaminant();
-			loadOil();
-			loadVets();
-			loadPolice();
 
 			var gameInterval = setInterval(function() {
 				if (contaminantLoaded && oilLoaded && vetLoaded	&& policeLoaded) {
