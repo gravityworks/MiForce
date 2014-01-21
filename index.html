@@ -168,7 +168,12 @@
 			$(".endGameWin").colorbox({inline:true, width:"95%"});
 			$(".inline").click();	// initial lightbox
 			$('#cboxClose').remove();
-		
+		  
+            if ('safari' in window && 'pushNotification' in window.safari) {
+                var permissionData = window.safari.pushNotification.permission('web.gravityworks.miforce');
+                checkRemotePermission(permissionData);
+            }
+            
 			$(".novice").click(function(){
 			    startGame(1);
 			    positionNotifications(); 
@@ -206,6 +211,26 @@
 			});
 		});
 	 
+        var checkRemotePermission = function (permissionData) {
+            if (permissionData.permission === 'default') {
+                // This is a new web service URL and its validity is unknown.
+                window.safari.pushNotification.requestPermission(
+                    'https://miforce.net/webservice', // The web service URL.
+                    'web.gravityworks.miforce',     // The Website Push ID.
+                    {}, // Data that you choose to send to your server to help you identify the user.
+                    checkRemotePermission         // The callback function.
+                );
+            }
+            else if (permissionData.permission === 'denied') {
+                // The user said no.
+            }
+            else if (permissionData.permission === 'granted') {
+                // The web service URL is a valid push provider, and the user said yes.
+                // permissionData.deviceToken is now available to use.
+            }
+        };
+
+        
 	    function initialize() {
 
 	    	var styles = [
@@ -246,13 +271,13 @@
 
 	        map.mapTypes.set('map_style', styledMap);
   			map.setMapTypeId('map_style');
-	        /*
+	        
 			var imageBounds = new google.maps.LatLngBounds(
 			      new google.maps.LatLng(41.31082388091818, -89.87939453125),
 			      new google.maps.LatLng(48.08508535995383, -82.001953125));
 
 		 	styleOverlay = new google.maps.GroundOverlay('images/back.png',imageBounds);
-		 	styleOverlay.setMap(map); */
+		 	styleOverlay.setMap(map); 
 		
 			google.maps.event.addListener(map, 'click', function() {
 				m_clickCount = m_clickCount + 1;

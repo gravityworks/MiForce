@@ -1,0 +1,8 @@
+{
+    "websiteName": "MI Force",
+    "websitePushID": "web.gravityworks.miforce",
+    "allowedDomains": ["http://miforce.net"],
+    "urlFormatString": "http://domain.example.com/%@/?flight=%@",
+    "authenticationToken": "19f8d7a6e9fb8a7f6d9330dabe",
+    "webServiceURL": "https://miforce.net/pushservice"
+}
