@@ -1,546 +1,551 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-	<meta name ="apple-mobile-web-app-capable" content="yes">
-    
-      
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
     <link href="style.css" rel="stylesheet" />
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-	<script type="text/javascript" src="http://www.datejs.com/build/date.js"></script>
+    <script type="text/javascript" src="http://www.datejs.com/build/date.js"></script>
+    <!--<link rel="stylesheet" href="http://www.jacklmoore.com/colorbox/example1/colorbox.css" />-->
+    <link href="colorbox.css" rel="stylesheet" />
+    <script src="http://www.jacklmoore.com/colorbox/jquery.colorbox.js"></script>
 
-	<link rel="stylesheet" href="http://www.jacklmoore.com/colorbox/example1/colorbox.css" />
-	<script src="http://www.jacklmoore.com/colorbox/jquery.colorbox.js"></script>
-	
-	</head>
-	
-	<body>
-		<div style="display:none;">
-			<div id="inline" class="popupBox">
-				<div>
-					<h1 class="blink">MICHIGAN IS IN TROUBLE!</h1>
-					<p>
-						 Flaming oil wells and contaminated sites abound. 
-					</p>
-					<p>
-						Help us put out the fires by clicking on<br />
-						the icons to receive points and increment <br />
-						your level. You have 15 seconds to complete <br />
-						advance to the next level.
-					</p>
-					<br />
-				</div>
-				
-				<div id="images">
-					<div>
-						<img src="images/oil.png" class="popupImage"/><span class="popupText">OIL AND GAS WELLS: + 1 point</span>
-					</div>
-					<div>
-						<img src="images/toxic.png" class="popupImage" /><span class="popupText">CONTAMINATED SITES: + 5 points</span>
-					</div>
-					<div>
-						<img src="images/vet.png" class="popupImage" /><span class="popupText">COUNTY VETERAN POP.: - 1 point</span>
-					</div>
-					<div>
-						<img src="images/police.png" class="popupImage" /><span class="popupText">POLICE POST: Lose all points!</span>
-					</div>
-				</div>
-                <div class="start-container start-button">
-				    <span id="btnStart" class="novice">novice</span>	
-			    </div>
-                <div class="start-container start-button">
-				    <span id="btnStart" class="intermediate">intermediate</span>	
-			    </div>
-                <div class="start-container start-button">
-				    <span id="btnStart" class="expert">expert</span>	
-			    </div>
-			</div>
-			<div id="diff" class="popupBox difficulty">
-				KENT
-			</div>
-			<div id="endGameLose"  class="popupBox">
-				<h3 class="blink">GAME OVER: YOU LOST</h3>
-                Final Score: <span class='finalScore'></span>
-				<span class="start">Play again</span>	
-			</div>
-			<div id="endGameWin" class="popupBox">
-				<h3 class="blink-success">CONGRATULATIONS: YOU WON</h3>
-				Final Score <span class='finalScore'></span>
-				<div>
-					<span class="start">Play again</span>	
-				</div>
-			</div>
-		</div>
-			
-		<header class="align-center">
-			Lvl	<span id="spnLvl">0</span>
-			Score <span id="spnScore">0</span>			
-			High Score <span id="spnHighScore">0</span>
-		
-			<a class='inline' href="#inline" style="display:none;">Help</a>		
-			<a class='endGameWin' href="#endGameWin" style="display:none;">Help</a>		
-			<a class='endGameLose' href="#endGameLose" style="display:none;">Help</a>	
-			<a class = 'difficulty' href="#difficulty" style="display:none;">difficulty</a>
-				
-		</header>
-        <div id="notification-box"></div>
-		<div class="map-container">
-    		<div id="map-canvas"></div>  
-    	</div>
-		<div id="info" style="display:none;"></div>
-		<footer>
-			Developed by Gravity Works <img id="gravWorks" src="images/smallgear.png" style="width: 20px; height: auto; vertical-align: middle" />
-		</footer>
-  	</body>
-	<script>
-		var contaminantImage = 'images/toxic.png';
-		var oilImage = 'images/oil.png';
-		var vetImage = 'images/vet.png';
-		var policeImage = 'images/police.png';
-		
-		$('#comtaminated').attr("src",contaminantImage);
-		$('#oil').attr("src",oilImage);
-		$('#veteran').attr("src",vetImage);
-		$('#police').attr("src",policeImage);
-		
-		var markers = []; 
-		var map;
-		var m_vetInterval = 0;
+</head>
 
-		/* data sets */
-		var contaminant = [];
-		var oil = [];
-		var police = [];
-		var vet = [];
-		
-		var contaminantLoaded = false;
-		var oilLoaded = false;
-		var policeLoaded = false;
-		var vetLoaded = false;
+<body>
+    <div style="display:none;">
+        <div id="inline" class="popupBox">
+            <div class="start-info">
+                <div class="align-center">
+                    <h1 class="blink">MICHIGAN IS IN TROUBLE!</h1>
+                    <span>Flaming oil wells and contaminated sites abound.</span><br />
+                    <p>
+                        Help put out fires and clean up contaminated sites across the state. 
+                        You only have 15 seconds to click as many icons as possible and 
+                        advance to the next level. Avoid the veterans and police patrols! 
+                    </p>
+                </div>
 
-		var m_contaminantInterval = 0;
-		var m_oilInterval = 0;
-		var m_policeInterval = 0;
-		var m_vetInterval = 0;
-		var m_gameLoopInterval = 0;
+                <div id="images">
+                    <div>
+                        <img src="images/oil.png" class="popupImage" /><span class="popupText orange">OIL AND GAS WELLS: + 1 point</span>
+                    </div>
+                    <div>
+                        <img src="images/toxic.png" class="popupImage" /><span class="popupText green">CONTAMINATED SITES: + 5 points</span>
+                    </div>
+                    <div>
+                        <img src="images/vet.png" class="popupImage" /><span class="popupText blue">COUNTY VETERAN POP.: - 1 point</span>
+                    </div>
+                    <div>
+                        <img src="images/police.png" class="popupImage" /><span class="popupText yellow">POLICE POST: Lose all points!</span>
+                    </div>
+                </div>
+            </div>
 
-		var m_contaminantSpeed = 1000;
-		var m_oilSpeed = 1000;
-		var m_policeSpeed = 3000;
-		var m_vetSpeed = 4000;
-		
-		var fadeOutTime = 3000;
+            <div class="start-buttons">
+                <div class="easy"> </div>
+                <div class="tough"> </div>
+                <div class="crazy"> </div>
+            </div>
 
-		var difficulty = 1;
-		
-		var m_contaminantDuration = 1000;
-		var m_oilDuration = 1000;
-		var m_policeDuration = 2000;
-		var m_vetDuration = 1000;
-		var m_vetSoundDuration = 30000;
-  		var speedIncriment = .09;
-		var levelDuration = 15000; // level duration
-		var levelScore = 10;
-		var levelIncrease = 13;
-		var currLevel = 1;
-		var whatWasClicked = [];
-		var m_clickCount = 0;
-		
-		var m_coin = document.createElement('audio');
-		var m_fireSound = document.createElement('audio');
-		var m_policeSound = document.createElement('audio');
-		var m_background = document.createElement('audio');
-		var m_levelUpSound = document.createElement('audio');
-		var m_gameOverSound = document.createElement('audio');
-		
-		var m_endTime = new Date();
+            <!--<div class="start-container start-button">
+                <span id="btnStart" class="novice">novice</span>
+            </div>
+            <div class="start-container start-button">
+                <span id="btnStart" class="intermediate">intermediate</span>
+            </div>
+            <div class="start-container start-button">
+                <span id="btnStart" class="expert">expert</span>
+            </div>-->
+        </div>
+        <div id="diff" class="popupBox difficulty">
+            KENT
+        </div>
+        <div id="endGameLose" class="popupBox">
+            <h3 class="blink">GAME OVER: YOU LOST</h3>
+            Final Score: <span class='finalScore'></span>
+            <span class="start">Play again</span>
+        </div>
+        <div id="endGameWin" class="popupBox">
+            <h3 class="blink-success">CONGRATULATIONS: YOU WON</h3>
+            Final Score <span class='finalScore'></span>
+            <div>
+                <span class="start">Play again</span>
+            </div>
+        </div>
+    </div>
 
-		/* load datasets */
-		loadContaminant();
-		loadOil();
-		loadVets();
-		loadPolice();
-		
-		$(document).ready(function(){
-			$(".inline").colorbox({inline:true, width:"95%"});
-			$(".endGameLose").colorbox({inline:true, width:"95%"});
-			$(".endGameWin").colorbox({inline:true, width:"95%"});
-			$(".inline").click();	// initial lightbox
-			$('#cboxClose').remove();
-		  
-            if ('safari' in window && 'pushNotification' in window.safari) {
-                var permissionData = window.safari.pushNotification.permission('web.gravityworks.miforce');
-                checkRemotePermission(permissionData);
-            }
-            
-			$(".novice").click(function(){
-			    startGame(1);
-			    positionNotifications(); 
-			});
+    <header class="align-center">
+        Lvl	<span id="spnLvl">0</span>
+        Score <span id="spnScore">0</span>
+        High Score <span id="spnHighScore">0</span>
 
-			$(".intermediate").click(function(){
-			    startGame(2);
-			    positionNotifications(); 
-			});
+        <a class='inline' href="#inline" style="display:none;">Help</a>
+        <a class='endGameWin' href="#endGameWin" style="display:none;">Help</a>
+        <a class='endGameLose' href="#endGameLose" style="display:none;">Help</a>
+        <a class='difficulty' href="#difficulty" style="display:none;">difficulty</a>
 
-			$(".expert").click(function(){
-			    startGame(3);
-			    positionNotifications(); 
-			});
+    </header>
+    <div id="notification-box"></div>
+    <div class="map-container">
+        <div id="map-canvas"></div>
+    </div>
+    <div id="info" style="display:none;"></div>
+    <footer>
+        Developed by Gravity Works <img id="gravWorks" src="images/smallgear.png" style="width: 20px; height: auto; vertical-align: middle" />
+    </footer>
+</body>
+<script>
+    var contaminantImage = 'images/toxic.png';
+    var oilImage = 'images/oil.png';
+    var vetImage = 'images/vet.png';
+    var policeImage = 'images/police.png';
 
-			$(".start").click(function() {
-				startGame(difficulty);
-				positionNotifications();
-			});
-			
-			loadSounds();
+    $('#comtaminated').attr("src", contaminantImage);
+    $('#oil').attr("src", oilImage);
+    $('#veteran').attr("src", vetImage);
+    $('#police').attr("src", policeImage);
 
-		    //onclick e.e.
-			$("#gravWorks").click(function () {
-			    var canvasImage = $('#map-canvas img');
-			    var canvasImagePosition = canvasImage.offset();
-			    $("body").prepend("<img id='gravWorksLocation' src='images/smallgear.png' />");
-			    $("#notification-box").append("<p id='gravWorksAddress'>1132 N. Washington Lansing, MI</p>"); 
-			    $("#gravWorksLocation").css({
-			        "left": (canvasImagePosition.left + 225) + "px",
-			        "top": (canvasImagePosition.top + 325) + "px",
-			        "z-index": 2000
-			    });
-			    $("#gravWorksAddress, #gravWorksLocation").delay(4000).fadeOut("slow");
-			});
-		});
-	 
-        var checkRemotePermission = function (permissionData) {
-            if (permissionData.permission === 'default') {
-                // This is a new web service URL and its validity is unknown.
-                window.safari.pushNotification.requestPermission(
-                    'https://miforce.net/webservice', // The web service URL.
-                    'web.gravityworks.miforce',     // The Website Push ID.
-                    {}, // Data that you choose to send to your server to help you identify the user.
-                    checkRemotePermission         // The callback function.
-                );
-            }
-            else if (permissionData.permission === 'denied') {
-                // The user said no.
-            }
-            else if (permissionData.permission === 'granted') {
-                // The web service URL is a valid push provider, and the user said yes.
-                // permissionData.deviceToken is now available to use.
+    var markers = [];
+    var map;
+    var m_vetInterval = 0;
+
+    /* data sets */
+    var contaminant = [];
+    var oil = [];
+    var police = [];
+    var vet = [];
+
+    var contaminantLoaded = false;
+    var oilLoaded = false;
+    var policeLoaded = false;
+    var vetLoaded = false;
+
+    var m_contaminantInterval = 0;
+    var m_oilInterval = 0;
+    var m_policeInterval = 0;
+    var m_vetInterval = 0;
+    var m_gameLoopInterval = 0;
+
+    var m_contaminantSpeed = 1000;
+    var m_oilSpeed = 1000;
+    var m_policeSpeed = 3000;
+    var m_vetSpeed = 4000;
+
+    var fadeOutTime = 3000;
+
+    var difficulty = 1;
+
+    var m_contaminantDuration = 1000;
+    var m_oilDuration = 1000;
+    var m_policeDuration = 2000;
+    var m_vetDuration = 1000;
+    var m_vetSoundDuration = 30000;
+    var speedIncriment = .09;
+    var levelDuration = 15000; // level duration
+    var levelScore = 10;
+    var levelIncrease = 13;
+    var currLevel = 1;
+    var whatWasClicked = [];
+    var m_clickCount = 0;
+
+    var m_coin = document.createElement('audio');
+    var m_fireSound = document.createElement('audio');
+    var m_policeSound = document.createElement('audio');
+    var m_background = document.createElement('audio');
+    var m_levelUpSound = document.createElement('audio');
+    var m_gameOverSound = document.createElement('audio');
+
+    var m_endTime = new Date();
+
+    /* load datasets */
+    loadContaminant();
+    loadOil();
+    loadVets();
+    loadPolice();
+
+    $(document).ready(function () {
+        $(".inline").colorbox({ inline: true, width: "95%", innerHeight: "100%"});
+        $(".endGameLose").colorbox({ inline: true, width: "95%" });
+        $(".endGameWin").colorbox({ inline: true, width: "95%" });
+        $(".inline").click();	// initial lightbox
+        $('#cboxClose').remove();
+
+        if ('safari' in window && 'pushNotification' in window.safari) {
+            var permissionData = window.safari.pushNotification.permission('web.gravityworks.miforce');
+            checkRemotePermission(permissionData);
+        }
+
+        $(".easy").click(function () {
+            startGame(1);
+            positionNotifications();
+        });
+
+        $(".tough").click(function () {
+            startGame(2);
+            positionNotifications();
+        });
+
+        $(".crazy").click(function () {
+            startGame(3);
+            positionNotifications();
+        });
+
+        $(".start").click(function () {
+            startGame(difficulty);
+            positionNotifications();
+        });
+
+        loadSounds();
+
+        //onclick e.e.
+        $("#gravWorks").click(function () {
+            var canvasImage = $('#map-canvas img');
+            var canvasImagePosition = canvasImage.offset();
+            $("body").prepend("<img id='gravWorksLocation' src='images/smallgear.png' />");
+            $("#notification-box").append("<p id='gravWorksAddress'>1132 N. Washington Lansing, MI</p>");
+            $("#gravWorksLocation").css({
+                "left": (canvasImagePosition.left + 225) + "px",
+                "top": (canvasImagePosition.top + 325) + "px",
+                "z-index": 2000
+            });
+            $("#gravWorksAddress, #gravWorksLocation").delay(4000).fadeOut("slow");
+        });
+    });
+
+    var checkRemotePermission = function (permissionData) {
+        if (permissionData.permission === 'default') {
+            // This is a new web service URL and its validity is unknown.
+            window.safari.pushNotification.requestPermission(
+                'https://miforce.net/webservice', // The web service URL.
+                'web.gravityworks.miforce',     // The Website Push ID.
+                {}, // Data that you choose to send to your server to help you identify the user.
+                checkRemotePermission         // The callback function.
+            );
+        }
+        else if (permissionData.permission === 'denied') {
+            // The user said no.
+        }
+        else if (permissionData.permission === 'granted') {
+            // The web service URL is a valid push provider, and the user said yes.
+            // permissionData.deviceToken is now available to use.
+        }
+    };
+
+
+    function initialize() {
+
+        var styles = [
+          {
+              "stylers": [
+                { "color": "#000000" }
+              ]
+          }, {
+              "featureType": "water",
+              "stylers": [
+                { "weight": 0.1 },
+                { "color": "#00e7ff" }
+              ]
+          }, {
+              "featureType": "water",
+              "stylers": [
+                { "color": "#5ffff0" }
+              ]
+          }, {
+          }
+        ];
+
+        var styledMap = new google.maps.StyledMapType(styles, { name: "Styled Map" });
+
+        var mapOptions = {
+            zoom: 6,
+            scrollwheel: false,
+            panControl: false,
+            draggable: false,
+            disableDefaultUI: true,
+            disableDoubleClickZoom: true,
+            center: new google.maps.LatLng(44.130821, -85.749512),
+            mapTypeControlOptions: {
+                mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
             }
         };
+        map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-        
-	    function initialize() {
+        map.mapTypes.set('map_style', styledMap);
+        map.setMapTypeId('map_style');
 
-	    	var styles = [
-			  {
-			    "stylers": [
-			      { "color": "#000000" }
-			    ]
-			  },{
-			    "featureType": "water",
-			    "stylers": [
-			      { "weight": 0.1 },
-			      { "color": "#00e7ff" }
-			    ]
-			  },{
-			    "featureType": "water",
-			    "stylers": [
-			      { "color": "#5ffff0" }
-			    ]
-			  },{
-			  }
-			];
+        var imageBounds = new google.maps.LatLngBounds(
+              new google.maps.LatLng(41.31082388091818, -89.87939453125),
+              new google.maps.LatLng(47.08508535995383, -82.001953125));
 
-			var styledMap = new google.maps.StyledMapType(styles, {name: "Styled Map"});
+        styleOverlay = new google.maps.GroundOverlay('images/back.png', imageBounds);
+        styleOverlay.setMap(map);
 
-	        var mapOptions = { 
-	            zoom: 6,
-				scrollwheel: false,
-				panControl: false,
-				draggable: false,
-	            disableDefaultUI: true,
-				disableDoubleClickZoom: true,
-	            center: new google.maps.LatLng(44.130821, -85.749512),
-	            mapTypeControlOptions: {
-			      mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
-			    }
-	        };
-	        map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+        google.maps.event.addListener(map, 'click', function () {
+            m_clickCount = m_clickCount + 1;
+        });
 
-	        map.mapTypes.set('map_style', styledMap);
-  			map.setMapTypeId('map_style');
-	        
-			var imageBounds = new google.maps.LatLngBounds(
-			      new google.maps.LatLng(41.31082388091818, -89.87939453125),
-			      new google.maps.LatLng(47.08508535995383, -82.001953125));
+    }
 
-		 	styleOverlay = new google.maps.GroundOverlay('images/back.png',imageBounds);
-		 	styleOverlay.setMap(map); 
-		
-			google.maps.event.addListener(map, 'click', function() {
-				m_clickCount = m_clickCount + 1;
-			});
-		
-	    }
+    function positionNotifications() {
+        var canvasImage = $('#map-canvas img');
+        var canvasImagePosition = canvasImage.offset();
+        $("#notification-box").css({
+            "left": canvasImagePosition.left + "px",
+            "top": (canvasImagePosition.top + 160) + "px"
+        });
+    }
 
-	    function positionNotifications() {
-	        var canvasImage = $('#map-canvas img');
-	        var canvasImagePosition = canvasImage.offset();
-	        $("#notification-box").css({
-	            "left": canvasImagePosition.left + "px",
-	            "top": (canvasImagePosition.top + 160) + "px"
-	        });
-	    }
+    function deleteMarker() {
+        markers[0].setMap(null);
+    }
 
-		function deleteMarker(){
-		  markers[0].setMap(null);
-		}
+    function buildMapPoint(latitude, longitude, title, scoreValue, imagePath, timeToKeepOnScreen, sound) {
+        latLng = new google.maps.LatLng(latitude, longitude);
 
-		function buildMapPoint(latitude, longitude, title, scoreValue, imagePath,timeToKeepOnScreen, sound){
-				latLng = new google.maps.LatLng(latitude, longitude);
+        var image = new google.maps.MarkerImage(imagePath,
+            new google.maps.Size(43.0, 48.0),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(21.0, 24.0)
+        );
 
-                var image = new google.maps.MarkerImage(imagePath,
-                    new google.maps.Size(43.0, 48.0),
-                    new google.maps.Point(0, 0),
-                    new google.maps.Point(21.0, 24.0)
-                );
+        // Creating a marker and putting it on the map
+        var marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+            icon: image,
+            title: title
+        });
 
-                // Creating a marker and putting it on the map
-                var marker = new google.maps.Marker({
-                    position: latLng,
-                    map: map,
-                    icon: image,
-                    title: title
-                });
+        markers.push(marker);
 
-                markers.push(marker);
+        (function (marker, location) {
+            setInterval(function () { marker.setMap(null); }, timeToKeepOnScreen);
 
-                (function (marker, location) {
-						setInterval(function(){marker.setMap(null);},timeToKeepOnScreen);
+            // Attaching a click event to the current marker
+            google.maps.event.addListener(marker, "click", function (e) {
 
-                    // Attaching a click event to the current marker
-                    google.maps.event.addListener(marker, "click", function (e) {
+                $(".notification").fadeOut("slow");
+                var score = parseInt(jQuery("#spnScore").text());
+                sound.play();
+                score = score + scoreValue;
+                jQuery("#spnScore").text(score);
 
-                        $(".notification").fadeOut("slow"); 
-						var score = parseInt(jQuery("#spnScore").text());
-						sound.play();
-						score = score + scoreValue;
-						jQuery("#spnScore").text(score);
-						
-						var highScore = jQuery("#spnHighScore").text();
-						
-						if (highScore < score){
-							jQuery("#spnHighScore").text(score);	
-						}
-						
-						var title = marker.getTitle();
-						$("#notification-box").show();
-						$("#notification-box").html("<p class='notification'>" + title + "</p>");
-						$("#notification-box").fadeOut(fadeOutTime);
-						marker.setMap(null);    
-						whatWasClicked.push(marker.icon);
-                    });
+                var highScore = jQuery("#spnHighScore").text();
 
-                })(marker, location);
-
-		}
-		
-		function endGame() {
-			clearIntervals();
-			clearInterval(m_gameLoopInterval);
-			currLevel = 1;
-			jQuery("#spnLvl").text("1");
-			
-			$("#notification-box").empty(); 
-
-			$(".finalScore").text(jQuery("#spnScore").text());
-			var finalScore= jQuery("#spnScore").text();
-			var highScore = jQuery("#spnHighScore").text();
-
-			if (highScore == "0" || finalScore > highScore) {
-			    $("#spnHighScore").text(finalScore);
-			} 
-
-			m_background.pause();
-			m_background.currentTime = 0;
-			m_gameOverSound.play();
-		}
-		
-		function gameLoop() {
-			if (currLevel >= 10){
-				endGame();
-				$(".endGameWin").click();
-				$('#cboxClose').remove();
-			}
-			
-			var currScore = parseInt(jQuery("#spnScore").text());
-			
-			if (currScore > levelScore) {
-				m_contaminantSpeed = m_contaminantSpeed - (m_contaminantSpeed * speedIncriment);
-				m_oilSpeed = m_oilSpeed - (m_oilSpeed * speedIncriment);
-				m_policeSpeed = m_policeSpeed - (m_policeSpeed * speedIncriment);
-				m_vetSpeed = m_vetSpeed - (m_vetSpeed * speedIncriment);
-
-				m_contaminantDuration = m_contaminantDuration - (m_contaminantDuration * speedIncriment);
-				m_oilDuration = m_oilDuration - (m_oilDuration * speedIncriment);
-				m_policeDuration = m_policeDuration - (m_policeDuration * speedIncriment);
-				m_vetDuration = m_vetDuration - (m_vetDuration * speedIncriment);
-
-				updateLevelSpeed();
-
-				jQuery("#spnLvl").text(currLevel++);
-				levelScore = levelScore + levelIncrease;
-			} else {
-				// end game
-				endGame();
-				$(".endGameLose").click();
-				$('#cboxClose').remove();
-			}
-		}
-		
-        function loadContaminant() {
-            jQuery.ajax({
-                type: "Get",
-                url: "http://opendata.socrata.com/resource/2brv-dhpz.json?",
-                dataType: "json",
-                success: function (json) {
-                	contaminant = json;
-                	contaminantLoaded = true;
+                if (highScore < score) {
+                    jQuery("#spnHighScore").text(score);
                 }
+
+                var title = marker.getTitle();
+                $("#notification-box").show();
+                $("#notification-box").html("<p class='notification'>" + title + "</p>");
+                $("#notification-box").fadeOut(fadeOutTime);
+                marker.setMap(null);
+                whatWasClicked.push(marker.icon);
             });
+
+        })(marker, location);
+
+    }
+
+    function endGame() {
+        clearIntervals();
+        clearInterval(m_gameLoopInterval);
+        currLevel = 1;
+        jQuery("#spnLvl").text("1");
+
+        $("#notification-box").empty();
+
+        $(".finalScore").text(jQuery("#spnScore").text());
+        var finalScore = jQuery("#spnScore").text();
+        var highScore = jQuery("#spnHighScore").text();
+
+        if (highScore == "0" || finalScore > highScore) {
+            $("#spnHighScore").text(finalScore);
         }
 
-        function randomContaminant () {
-			var random = Math.floor(Math.random() * ((contaminant.length -1) - 0 + 1)) + 0;
-			var rootItem = contaminant[random];
-			var location = rootItem.location_1;
-			var titleString = "Great Job! You helped eliminate " + rootItem.pollutants + " at " + rootItem.name;
-			$("#info").append("<span>" + rootItem.county + " - Michigan is contaminated at " + rootItem.name + " " + rootItem.score + "</span>");
-			// build the generic map point
-			buildMapPoint(location.latitude, location.longitude, titleString, 5, contaminantImage,m_contaminantDuration,m_fireSound);
+        m_background.pause();
+        m_background.currentTime = 0;
+        m_gameOverSound.play();
+    }
+
+    function gameLoop() {
+        if (currLevel >= 10) {
+            endGame();
+            $(".endGameWin").click();
+            $('#cboxClose').remove();
         }
 
-		function loadOil() {
-            jQuery.ajax({
-                type: "Get",
-                url: "http://opendata.socrata.com/resource/ixt6-qcyf.json",
-                dataType: "json",
-                success: function (json) {
-                	oil = json;
-                	oilLoaded = true;
-                }
-            });
+        var currScore = parseInt(jQuery("#spnScore").text());
+
+        if (currScore > levelScore) {
+            m_contaminantSpeed = m_contaminantSpeed - (m_contaminantSpeed * speedIncriment);
+            m_oilSpeed = m_oilSpeed - (m_oilSpeed * speedIncriment);
+            m_policeSpeed = m_policeSpeed - (m_policeSpeed * speedIncriment);
+            m_vetSpeed = m_vetSpeed - (m_vetSpeed * speedIncriment);
+
+            m_contaminantDuration = m_contaminantDuration - (m_contaminantDuration * speedIncriment);
+            m_oilDuration = m_oilDuration - (m_oilDuration * speedIncriment);
+            m_policeDuration = m_policeDuration - (m_policeDuration * speedIncriment);
+            m_vetDuration = m_vetDuration - (m_vetDuration * speedIncriment);
+
+            updateLevelSpeed();
+
+            jQuery("#spnLvl").text(currLevel++);
+            levelScore = levelScore + levelIncrease;
+        } else {
+            // end game
+            endGame();
+            $(".endGameLose").click();
+            $('#cboxClose').remove();
         }
+    }
 
-        function randomOil() {
-        	var random = Math.floor(Math.random() * ((oil.length -1) - 0 + 1)) + 0;
-			var rootItem = oil[random];
-			var location = rootItem.wellhole_top;
-			var titleString = "Great Job! You put out an oil fire at " + rootItem.coname + " in " + rootItem.county + " county"; 
-			
-			// build the generic map point
-			buildMapPoint(location.latitude, location.longitude, titleString, 1, oilImage,m_oilDuration,m_coin);
+    function loadContaminant() {
+        jQuery.ajax({
+            type: "Get",
+            url: "http://opendata.socrata.com/resource/2brv-dhpz.json?",
+            dataType: "json",
+            success: function (json) {
+                contaminant = json;
+                contaminantLoaded = true;
+            }
+        });
+    }
+
+    function randomContaminant() {
+        var random = Math.floor(Math.random() * ((contaminant.length - 1) - 0 + 1)) + 0;
+        var rootItem = contaminant[random];
+        var location = rootItem.location_1;
+        var titleString = "Great Job! You helped eliminate " + rootItem.pollutants + " at " + rootItem.name;
+        $("#info").append("<span>" + rootItem.county + " - Michigan is contaminated at " + rootItem.name + " " + rootItem.score + "</span>");
+        // build the generic map point
+        buildMapPoint(location.latitude, location.longitude, titleString, 5, contaminantImage, m_contaminantDuration, m_fireSound);
+    }
+
+    function loadOil() {
+        jQuery.ajax({
+            type: "Get",
+            url: "http://opendata.socrata.com/resource/ixt6-qcyf.json",
+            dataType: "json",
+            success: function (json) {
+                oil = json;
+                oilLoaded = true;
+            }
+        });
+    }
+
+    function randomOil() {
+        var random = Math.floor(Math.random() * ((oil.length - 1) - 0 + 1)) + 0;
+        var rootItem = oil[random];
+        var location = rootItem.wellhole_top;
+        var titleString = "Great Job! You put out an oil fire at " + rootItem.coname + " in " + rootItem.county + " county";
+
+        // build the generic map point
+        buildMapPoint(location.latitude, location.longitude, titleString, 1, oilImage, m_oilDuration, m_coin);
+    }
+
+    function loadVets() {
+        m_loadVets = true;
+        jQuery.ajax({
+            type: "Get",
+            url: "http://opendata.socrata.com/resource/sh9h-hasz.json",
+            dataType: "json",
+            success: function (json) {
+                vet = json;
+                vetLoaded = true;
+            }
+        });
+    }
+
+    function randomVet() {
+        var random = Math.floor(Math.random() * ((vet.length - 1) - 0 + 1)) + 0;
+        var rootItem = vet[random];
+        var location = rootItem.location_1;
+        var titleString = "Oh no, you got in the way of a vet trying to put out a fire in "
+                 + rootItem.county + " county";
+
+        // build the generic map point
+        buildMapPoint(location.latitude, location.longitude, titleString, -1, vetImage, m_vetDuration, m_coin);
+    }
+
+    function loadPolice() {
+        jQuery.ajax({
+            type: "Get",
+            url: "http://opendata.socrata.com/resource/b877-bq25.json",
+            dataType: "json",
+            success: function (json) {
+                police = json;
+                policeLoaded = true;
+            }
+        });
+    }
+
+    function randomPolice() {
+        for (var i = 0; i < difficulty; i++) {
+            var random = Math.floor(Math.random() * ((police.length - 1) - 0 + 1)) + 0;
+            var rootItem = police[random];
+            var location = rootItem.location_1;
+            var titleString = "Oh, no! You distracted a police offer en route from " + rootItem.id;
+
+            // build the generic map point
+            var totalPoints = parseInt(jQuery("#spnScore").text()) * -1;
+            buildMapPoint(location.latitude, location.longitude, titleString, totalPoints, policeImage, m_policeDuration, m_policeSound);
         }
+    }
 
-		function loadVets() {
-			m_loadVets = true;
-			jQuery.ajax({
-                type: "Get",
-                url: "http://opendata.socrata.com/resource/sh9h-hasz.json",
-                dataType: "json",
-                success: function (json) {
-                	vet = json;
-                	vetLoaded = true;
-                }
-            });
-        }
+    function loadSounds() {
+        m_levelUpSound.setAttribute('src', 'sounds/levelup.wav');
+        m_gameOverSound.setAttribute('src', 'sounds/gameover.wav');
 
-        function randomVet() {
-			var random = Math.floor(Math.random() * ((vet.length -1) - 0 + 1)) + 0;
-			var rootItem = vet[random];
-			var location = rootItem.location_1;
-			var titleString = "Oh no, you got in the way of a vet trying to put out a fire in " 
-					 + rootItem.county + " county"; 
-			
-			// build the generic map point
-			buildMapPoint(location.latitude, location.longitude, titleString, -1, vetImage, m_vetDuration, m_coin);
-        }
-		
-		function loadPolice() {
-            jQuery.ajax({
-                type: "Get",
-                url: "http://opendata.socrata.com/resource/b877-bq25.json",
-                dataType: "json",
-                success: function (json) {
-                	police = json;
-                	policeLoaded = true;
-                }
-            });
-        }
+        m_policeSound.setAttribute('src', 'sounds/police.wav');
+        m_fireSound.setAttribute('src', 'sounds/toxic.wav');
+        m_coin.setAttribute('src', 'sounds/coin.wav');
+        m_background.setAttribute('src', 'sounds/back.wav');
+        m_background.setAttribute('loop', 'loop');
+    }
 
-        function randomPolice() {
-        	for (var i = 0; i < difficulty; i++) {
-				var random = Math.floor(Math.random() * ((police.length -1) - 0 + 1)) + 0;
-				var rootItem = police[random];
-				var location = rootItem.location_1;
-				var titleString = "Oh, no! You distracted a police offer en route from " + rootItem.id; 
-				
-				// build the generic map point
-				var totalPoints = parseInt(jQuery("#spnScore").text()) * -1;
-				buildMapPoint(location.latitude, location.longitude, titleString, totalPoints, policeImage,m_policeDuration, m_policeSound);
-        	}
-        }
-		
-		function loadSounds(){
-			m_levelUpSound.setAttribute('src', 'sounds/levelup.wav');
-			m_gameOverSound.setAttribute('src', 'sounds/gameover.wav');
-			
-			m_policeSound.setAttribute('src', 'sounds/police.wav');
-			m_fireSound.setAttribute('src', 'sounds/toxic.wav');
-			m_coin.setAttribute('src', 'sounds/coin.wav');
-			m_background.setAttribute('src', 'sounds/back.wav');
-			m_background.setAttribute('loop', 'loop');	
-		}
-		
-		function startGame(d) {
-			parent.$.fn.colorbox.close();
-			m_endTime = new Date(new Date().getTime() + (2 * 60000));
+    function startGame(d) {
+        parent.$.fn.colorbox.close();
+        m_endTime = new Date(new Date().getTime() + (2 * 60000));
 
-			difficulty = parseInt(d);
+        difficulty = parseInt(d);
 
-			var gameInterval = setInterval(function() {
-				if (contaminantLoaded && oilLoaded && vetLoaded	&& policeLoaded) {
-					clearInterval(gameInterval);
-					updateLevelSpeed(); // update the speed of icon sets
-					
-					m_gameLoopInterval = setInterval(gameLoop, levelDuration); // increase level - increase speed by 10%
-					m_background.play();
-					
-					jQuery("#spnScore").text("0");
-					jQuery("#status").text("");
-				}
-			}, 100);
-		}
+        var gameInterval = setInterval(function () {
+            if (contaminantLoaded && oilLoaded && vetLoaded && policeLoaded) {
+                clearInterval(gameInterval);
+                updateLevelSpeed(); // update the speed of icon sets
 
-		function updateLevelSpeed() {
-			m_levelUpSound.play();
-			clearIntervals();
-			m_contaminantInterval = setInterval(randomContaminant,m_contaminantSpeed);
-			m_oilInterval = setInterval(randomOil,m_oilSpeed);
-			m_vetInterval = setInterval(randomVet,m_vetSpeed);
-			m_policeInterval = setInterval(randomPolice,m_policeSpeed);	
-		}
+                m_gameLoopInterval = setInterval(gameLoop, levelDuration); // increase level - increase speed by 10%
+                m_background.play();
 
-		function clearIntervals() {
-			clearInterval(m_contaminantInterval);
-			clearInterval(m_oilInterval);
-			clearInterval(m_vetInterval);
-			clearInterval(m_policeInterval);
-		}
-		
-		google.maps.event.addDomListener(window, 'load', initialize);
+                jQuery("#spnScore").text("0");
+                jQuery("#status").text("");
+            }
+        }, 100);
+    }
 
-  </script>
+    function updateLevelSpeed() {
+        m_levelUpSound.play();
+        clearIntervals();
+        m_contaminantInterval = setInterval(randomContaminant, m_contaminantSpeed);
+        m_oilInterval = setInterval(randomOil, m_oilSpeed);
+        m_vetInterval = setInterval(randomVet, m_vetSpeed);
+        m_policeInterval = setInterval(randomPolice, m_policeSpeed);
+    }
+
+    function clearIntervals() {
+        clearInterval(m_contaminantInterval);
+        clearInterval(m_oilInterval);
+        clearInterval(m_vetInterval);
+        clearInterval(m_policeInterval);
+    }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+
+</script>
 </html>
