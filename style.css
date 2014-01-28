@@ -458,7 +458,7 @@ header {
     background: url(images/miforce.png) center 5px no-repeat #111;
     padding: 55px 5px 10px;
     color: #6AF411;
-    font-size: 26px;
+    font-size: 22px;
     position: fixed;
     width: 100%;
     z-index: 1;
@@ -632,7 +632,7 @@ header span{
     }
 
 #map-canvas {
-    height: 360px;
+    height: 380px;
     width: 338px;
 }
 
