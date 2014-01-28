@@ -148,6 +148,7 @@
 
 #cboxLoadedContent {
     overflow: hidden !important;
+    height: auto; 
     -webkit-overflow-scrolling: touch;
 }
 

@@ -23,9 +23,9 @@
                     <h1 class="blink">MICHIGAN IS IN TROUBLE!</h1>
                     <span>Flaming oil wells and contaminated sites abound.</span><br />
                     <p>
-                        Help put out fires and clean up contaminated sites across the state. 
-                        You only have 15 seconds to click as many icons as possible and 
-                        advance to the next level. Avoid the veterans and police patrols! 
+                        Help put out fires and clean up contaminated sites across the state.
+                        You only have 15 seconds to click as many icons as possible and
+                        advance to the next level. Avoid the veterans and police patrols!
                     </p>
                 </div>
 
@@ -50,38 +50,30 @@
                 <div class="tough"> </div>
                 <div class="crazy"> </div>
             </div>
-
-            <!--<div class="start-container start-button">
-                <span id="btnStart" class="novice">novice</span>
-            </div>
-            <div class="start-container start-button">
-                <span id="btnStart" class="intermediate">intermediate</span>
-            </div>
-            <div class="start-container start-button">
-                <span id="btnStart" class="expert">expert</span>
-            </div>-->
         </div>
         <div id="diff" class="popupBox difficulty">
             KENT
         </div>
         <div id="endGameLose" class="popupBox">
-            <h3 class="blink">GAME OVER: YOU LOST</h3>
-            Final Score: <span class='finalScore'></span>
-            <span class="start">Play again</span>
+           
+                <h3 class="blink">GAME OVER: YOU LOST</h3>
+                <b>Final Score: </b><span class='finalScore'></span><br />
+                <span class="start">Play again</span>
+
         </div>
         <div id="endGameWin" class="popupBox">
             <h3 class="blink-success">CONGRATULATIONS: YOU WON</h3>
-            Final Score <span class='finalScore'></span>
-            <div>
-                <span class="start">Play again</span>
-            </div>
+            <b>Final Score: </b><span class='finalScore'></span><br />
+
+            <span class="start">Play again</span>
+
         </div>
     </div>
 
     <header class="align-center">
-        Lvl	<span id="spnLvl">0</span>
+        <b>Lvl	<span id="spnLvl">0</span>
         Score <span id="spnScore">0</span>
-        High Score <span id="spnHighScore">0</span>
+        High Score <span id="spnHighScore">0</span></b>
 
         <a class='inline' href="#inline" style="display:none;">Help</a>
         <a class='endGameWin' href="#endGameWin" style="display:none;">Help</a>
@@ -167,12 +159,19 @@
     loadVets();
     loadPolice();
 
-    $(document).ready(function () {
-        $(".inline").colorbox({ inline: true, width: "95%", innerHeight: "100%"});
-        $(".endGameLose").colorbox({ inline: true, width: "95%" });
-        $(".endGameWin").colorbox({ inline: true, width: "95%" });
+
+
+    $(window).load(function () {
+
+        var landingHeight = $("#inline").outerHeight();
+        var loseHeight = $("#endGameLose").outerHeight();
+        var winHeight = $("#endGameWin").outerHeight();
+        $(".inline").colorbox({ inline: true, width: "95%", innerHeight: landingHeight });
+        $(".endGameLose").colorbox({ inline: true, width: "95%", innerHeight: loseHeight });
+        $(".endGameWin").colorbox({ inline: true, width: "95%", innerHeight: winHeight });
         $(".inline").click();	// initial lightbox
         $('#cboxClose').remove();
+
 
         if ('safari' in window && 'pushNotification' in window.safari) {
             var permissionData = window.safari.pushNotification.permission('web.gravityworks.miforce');
@@ -294,7 +293,7 @@
         var canvasImage = $('#map-canvas img');
         var canvasImagePosition = canvasImage.offset();
         $("#notification-box").css({
-            "left": canvasImagePosition.left + "px",
+            "left": (canvasImagePosition.left + 20) + "px",
             "top": (canvasImagePosition.top + 160) + "px"
         });
     }
